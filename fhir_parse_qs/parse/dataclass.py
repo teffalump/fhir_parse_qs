@@ -1,10 +1,10 @@
 from collections import namedtuple
 from pendulum import parse
-from fhir_parse_qs.mappings import mapping
+from fhir_parse_qs.mappings import search_parameters
 
 __all__=['Search']
 
-FHIRSearchPair = namedtuple("FHIRSearchPair", 'modifier', 'prefix', 'parameter', 'value', 'type_')
+FHIRSearchPair = namedtuple("FHIRSearchPair", 'modifier prefix parameter value type_')
 
 class Search:
     """
@@ -16,9 +16,13 @@ class Search:
 
     """
 
-    def init(self, resource, query_string, mapping=None):
+    def __init__(self, resource, query_string, mapping=None):
+
         self.allowed_basic_mods = ['exact', 'missing', 'exact', 'contains', 'text', 'in', 'above', 'below', 'not-in']
         self.allowed_prefixes = ['eq', 'ne', 'gt', 'lt', 'ge', 'le', 'sa', 'eb', 'ap']
+        self.resource = resource
+        self.search_parameters = search_parameters
+        self.qs = query_string
         self.search_types = {
                 'number': float,
                 'string': str,
@@ -29,11 +33,36 @@ class Search:
                 'quantity': str,
                 'uri': str
                 }
-        self.resource = resource
+
+        self.errors = []
+
         if not mapping:
-            self.mapping = mapping[resource]
-        self.qs = query_string
+            try:
+                self.search_mapping = self.search_parameters[resource]
+                self.search_mapping.update(self.search_parameters['ctrl_parameters']) #update with common
+                self.search_mapping.update(self.search_parameters['common_parameters']) #update with common
+            except:
+                raise ValueError('{} is not a supported endpoint; Please provide mapping'.format(resource))
+        else:
+            self.search_mapping = mapping
+
         self.parsed_qs = self.parse_qs(query_string)
+
+    def __getitem__(self, key):
+        """
+        Retrieves FHIRSearch by parameter
+        """
+
+        if self.parsed_qs is None: raise TypeError('Not indexable')
+        found = []
+        for item in self.parsed_qs:
+            if item.parameter == key: found.append(item)
+        if not found:
+            raise KeyError(key)
+        if len(found) == 1:
+            return found[0]
+        else:
+            return found
 
     def __repr__(self):
         return '<FHIR search on {}, {} parameters>'.format(self.resource, len(self.parsed_qs))
@@ -47,24 +76,32 @@ class Search:
     @staticmethod
     def naive_parse_qs(qs):
         from urllib.parse import parse_qsl
-        return parse_qs(qsl)
+        return parse_qsl(qs)
 
     def parse_qs(self, qs):
         naive_pairs = self.naive_parse_qs(qs)
         pairs = []
         for param, value in naive_pairs:
             par, mod = self.getModifier(param)
-            type_ = self.mapping[par]
+
+            # If parameter not supported, ignore and add to errors
+            try:
+                type_ = self.search_mapping[par]
+            except:
+                self.errors.append('Parameter <{}> not found in mapping; Ignoring'.format(par))
+                continue
+
             if mod:
                 if not self.validModifier(mod, type_):
-                    raise TypeError('The {} search param cannot have modifier {}'.format(par, mod))
+                    raise TypeError('The {} search parameter cannot have modifier {}'.format(par, mod))
             pre, v = self.getPrefix(value, type_)
 
             #Get validated value
             value = self.getValidType(type_, v)
             if value is False: raise ValueError('Cannot cast {} to type {}'.format(v, type_))
 
-            pairs.append(FHIRSearchPair(modifier=mod, prefix=pre, value=value, paramater=par, type_=type_))
+            pairs.append(FHIRSearchPair(modifier=mod, prefix=pre, value=value, parameter=par, type_=type_))
+
         return pairs
 
     def getValidType(self, type_, value):
@@ -104,7 +141,7 @@ class Search:
 
     def getModifier(self, parameter):
         """
-        Returns (base_paramater, mod) or (parameter, None)
+        Returns (base_parameter, mod) or (parameter, None)
 
         Method: Base modifiers search, then do split on colons
         """
@@ -147,7 +184,7 @@ class Search:
         return [x.parameter for x in self.parsed_qs]
 
     @property
-    def resource(self):
+    def endpoint(self):
         """
         Returns the search resource
         """
@@ -166,3 +203,10 @@ class Search:
         Returns list of search queries
         """
         return self.parsed_qs
+
+    @property
+    def error(self):
+        """
+        Non-critical errors during parsing
+        """
+        return self.errors

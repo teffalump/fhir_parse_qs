@@ -3,10 +3,12 @@ A library to parse FHIR query strings.
 - Validates type and returns correct object
 - Parses modifiers and prefixes
 
+Generally only have included Resources with maturity greater than 3. Some exceptions.
+
 #### Usage
 
     from fhir_parse_qs import Search
-    search = Search('Patient', 'name=bob')
+    search = Search('Patient', 'name=bob') # Search(<endpoint>, <query_string>)
 
     # what endpoint
     print(search.resource) --> 'Patient'

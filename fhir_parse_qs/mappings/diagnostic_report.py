@@ -1,0 +1,18 @@
+mapping = {
+        'based-on':  'reference',
+        'category':  'token',
+        'code':  'token',
+        'context':  'reference',
+        'date':  'date',
+        'diagnosis':  'token',
+        'encounter':  'reference',
+        'identifier':  'token',
+        'image':  'reference',
+        'issued':  'date',
+        'patient':  'reference',
+        'performer':  'reference',
+        'result':  'reference',
+        'specimen':  'reference',
+        'status':  'token',
+        'subject':  'reference',
+        }
