@@ -1,0 +1,16 @@
+mapping = {
+        'code':  'token',
+        'context':  'reference',
+        'device':  'reference',
+        'effective-time':  'date',
+        'identifier':  'token',
+        'medication':  'reference',
+        'not-given':  'token',
+        'patient':  'reference',
+        'performer':  'reference',
+        'prescription':  'reference',
+        'reason-given':  'token',
+        'reason-not-given':  'token',
+        'status':  'token',
+        'subject':  'reference',
+        }

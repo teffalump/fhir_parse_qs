@@ -4,7 +4,7 @@ A library to parse FHIR query strings.
 - Built-in search parameters from FHIR standard
 - Parses modifiers and prefixes
 
-Generally only have included Resources with maturity greater than 2. Some exceptions.
+Generally only have included relevant Resources with maturity greater than 2. Some exceptions.
 
 #### Usage
 

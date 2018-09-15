@@ -55,5 +55,10 @@ class TestQS(unittest.TestCase):
         assert 'ge' in s.prefix
         assert 'le' in s.prefix
 
+    def test_or(self):
+        s = Search(*qss[-1])
+        assert s[0].value == '(bone OR liver) and metastases'
+        assert s[0].parameter == '_text'
+
 if __name__ == '__main__':
     unittest.main()

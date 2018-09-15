@@ -11,6 +11,9 @@ from .family_member_history import mapping as fm
 from .imaging_study import mapping as img
 from .immunization import mapping as im
 from .location import mapping as loc
+from. medication import mapping as m
+from .medication_administration import mapping as ma
+from .medication_dispense import mapping as md
 from .medication_request import mapping as mr
 from .medication_statement import mapping as ms
 from .observation import mapping as obs
@@ -37,6 +40,9 @@ search_parameters = {
         'ImagingStudy': img,
         'Immunization': im,
         'Location': loc,
+        'Medication': m,
+        'MedicationAdministration': ma,
+        'MedicationDispense': md,
         'MedicationRequest': mr,
         'MedicationStatement': ms,
         'Observation': obs,
