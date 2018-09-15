@@ -35,3 +35,9 @@ Generally only have included relevant Resources with maturity greater than 2. So
     # unrecognized parameter, ignore and log it
     search = Search('Patient', 'random=test')
     search.error --> [...]
+
+    # chains, does not verify target types yet
+    search = Search('Observation', 'subject.name=peter')
+    search[0].parameter --> 'subject'
+    search[0].value --> 'peter'
+    search[0].chain --> ['name']

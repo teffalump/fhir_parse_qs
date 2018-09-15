@@ -4,7 +4,7 @@ from fhir_parse_qs.mappings import search_parameters
 
 __all__=['Search']
 
-FHIRSearchPair = namedtuple("FHIRSearchPair", 'modifier prefix parameter value type_')
+FHIRSearchPair = namedtuple("FHIRSearchPair", 'modifier prefix parameter value type_ chain')
 
 class Search:
     """
@@ -89,7 +89,12 @@ class Search:
         naive_pairs = self.naive_parse_qs(qs)
         pairs = []
         for param, value in naive_pairs:
+
+            #Get modifier
             par, mod = self.getModifier(param)
+
+            # Chain parsing
+            par, chains = self.getChain(par)
 
             # If parameter not supported, ignore and add to errors
             try:
@@ -98,16 +103,23 @@ class Search:
                 self.errors.append('Parameter <{}> not found in mapping; Ignoring'.format(par))
                 continue
 
+            # Does type allow chaining
+            if chains and not self.allowsChain(type_):
+                self.errors.append('Parameter <{}> does not allow chaining; Ignoring'.format(par))
+                continue
+
             if mod:
                 if not self.validModifier(mod, type_):
                     raise TypeError('The {} search parameter cannot have modifier {}'.format(par, mod))
+
+            #Prefix
             pre, v = self.getPrefix(value, type_)
 
             #Get validated value
             value = self.getValidType(type_, v)
             if value is False: raise ValueError('Cannot cast {} to type {}'.format(v, type_))
 
-            pairs.append(FHIRSearchPair(modifier=mod, prefix=pre, value=value, parameter=par, type_=type_))
+            pairs.append(FHIRSearchPair(modifier=mod, prefix=pre, value=value, parameter=par, type_=type_, chain=chains or None))
 
         return pairs
 
@@ -161,6 +173,21 @@ class Search:
             return base, mod
 
         return parameter, None
+
+    def allowsChain(self, type_):
+        """
+        Can only chain references
+        """
+        return True if type_ == 'reference' else False
+
+    def getChain(self, parameter):
+        """
+        Parse chain - split on '.'
+
+        Returns (base_parameter, [chains]) or (parameter, [])
+        """
+        base, *chain = parameter.split('.')
+        return base, chain
 
     @property
     def modifier(self):
