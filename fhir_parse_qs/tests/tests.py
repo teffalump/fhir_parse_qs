@@ -41,9 +41,9 @@ class TestQS(unittest.TestCase):
 
     def test_mod(self):
         s = Search(*qss[3])
-        assert s.parsed[0].modifier == 'contains'
-        assert s.parsed[0].value == 'eve'
-        assert s.parsed[0].parameter == 'given'
+        assert s[0].modifier == 'contains'
+        assert s[0].value == 'eve'
+        assert s[0].parameter == 'given'
         assert not s.prefix
 
     def test_prefix(self):

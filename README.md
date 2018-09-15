@@ -3,30 +3,30 @@ A library to parse FHIR query strings.
 - Validates type and returns correct object
 - Parses modifiers and prefixes
 
-Generally only have included Resources with maturity greater than 3. Some exceptions.
+Generally only have included Resources with maturity greater than 2. Some exceptions.
 
 #### Usage
 
     from fhir_parse_qs import Search
     search = Search('Patient', 'name=bob') # Search(<endpoint>, <query_string>)
 
-    # what endpoint
+    # endpoint
     search.endpoint --> 'Patient'
-
-    # each parameter/value pair gets parsed into a namedtuple
-    search.parsed[0] --> FHIRSearch(...)
 
     # all the namedtuples
     search.parsed --> [FHIRSearch(...)]
 
-    # get FHIRSearch with parameter as key
-    search['name'] --> FHIRSearch(...)
+    # index as key; each parameter/value pair gets parsed into a namedtuple
+    search[0] --> FHIRSearch(...)
+    search[0].modifier --> None
+    search[0].prefix --> None
+    search[0].value --> 'bob'
+    search[0].paramater --> 'name'
+    search[0].type_ --> 'string'
 
-    search.parsed[0].modifier --> None
-    search.parsed[0].prefix --> None
-    search.parsed[0].value --> 'bob'
-    search.parsed[0].paramater --> 'name'
+    # act like dict with parameter as key (list if non-unique parameter)
+    search['name'] --> FHIRSearch(...)
 
     # can iterate over the paramater/value pairs
     for x in search:
-         x --> FHIRSearch(...)
+         print(x) --> FHIRSearch(...)

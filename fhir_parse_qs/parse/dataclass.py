@@ -50,13 +50,20 @@ class Search:
 
     def __getitem__(self, key):
         """
-        Retrieves FHIRSearch by parameter
+        Retrieves FHIRSearch by parameter or index
         """
 
         if self.parsed_qs is None: raise TypeError('Not indexable')
         found = []
-        for item in self.parsed_qs:
-            if item.parameter == key: found.append(item)
+        if isinstance(key, str):
+            for item in self.parsed_qs:
+                if item.parameter == key: found.append(item)
+        else:
+            try:
+                found.append(self.parsed_qs[key])
+            except:
+                pass
+
         if not found:
             raise KeyError(key)
         if len(found) == 1:
