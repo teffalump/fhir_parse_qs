@@ -51,6 +51,7 @@ class TestQS(unittest.TestCase):
         assert not s['subject'].modifier
         assert s['subject'].chain == ['name']
         assert s['subject'].value == 'peter'
+        assert s['subject'].parameter == 'subject'
 
     def test_mod_plus(self):
         s = Search(*qss[-2])
