@@ -1,6 +1,7 @@
 A library to parse FHIR query strings.
 
 - Validates type and returns correct object
+- Built-in search parameters from FHIR standard
 - Parses modifiers and prefixes
 
 Generally only have included Resources with maturity greater than 2. Some exceptions.
@@ -30,3 +31,7 @@ Generally only have included Resources with maturity greater than 2. Some except
     # can iterate over the paramater/value pairs
     for x in search:
          print(x) --> FHIRSearch(...)
+
+    # if does not recognize parameter, ignores it and adds to error
+    search = Search('Patient', 'random=test')
+    search.error --> [...]
