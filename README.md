@@ -11,16 +11,16 @@ Generally only have included Resources with maturity greater than 3. Some except
     search = Search('Patient', 'name=bob') # Search(<endpoint>, <query_string>)
 
     # what endpoint
-    print(search.endpoint) --> 'Patient'
+    search.endpoint --> 'Patient'
 
     # each parameter/value pair gets parsed into a namedtuple
-    search.parsed[0] --> FHIRSearch
+    search.parsed[0] --> FHIRSearch(...)
 
     # all the namedtuples
-    search.parsed --> [FHIRSearch]
+    search.parsed --> [FHIRSearch(...)]
 
     # get FHIRSearch with parameter as key
-    search['name'] --> FHIRSearch
+    search['name'] --> FHIRSearch(...)
 
     search.parsed[0].modifier --> None
     search.parsed[0].prefix --> None
@@ -29,4 +29,4 @@ Generally only have included Resources with maturity greater than 3. Some except
 
     # can iterate over the paramater/value pairs
     for x in search:
-        print(x) --> FHIRSearch
+         x --> FHIRSearch(...)

@@ -148,7 +148,7 @@ class Search:
         if ':' in parameter:
             for mod in self.allowed_basic_mods:
                 if parameter.endswith(mod):
-                    return parameter[:len(mod)-1], mod
+                    return parameter[:-len(mod)-1], mod
 
             base, mod = parameter.split(':')
             return base, mod
