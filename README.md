@@ -32,6 +32,6 @@ Generally only have included Resources with maturity greater than 2. Some except
     for x in search:
          print(x) --> FHIRSearch(...)
 
-    # if does not recognize parameter, ignores it and adds to error
+    # unrecognized parameter, ignore and log it
     search = Search('Patient', 'random=test')
     search.error --> [...]
