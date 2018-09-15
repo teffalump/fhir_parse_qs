@@ -46,6 +46,13 @@ class TestQS(unittest.TestCase):
         assert s[0].parameter == 'given'
         assert not s.prefix
 
+    def test_mod_plus(self):
+        s = Search(*qss[-2])
+        assert len(s['clinical-status']) == 2
+        assert s['clinical-status'][0].value == 'active'
+        assert s['clinical-status'][1].value == 'false'
+        assert s['clinical-status'][1].modifier == 'exists'
+
     def test_prefix(self):
         #TODO More
         s = Search(*qss[4])

@@ -18,7 +18,7 @@ class Search:
 
     def __init__(self, resource, query_string, mapping=None):
 
-        self.allowed_basic_mods = ['exact', 'missing', 'exact', 'contains', 'text', 'in', 'above', 'below', 'not-in']
+        self.allowed_basic_mods = ['exact', 'missing', 'exists', 'contains', 'text', 'in', 'above', 'below', 'not-in']
         self.allowed_prefixes = ['eq', 'ne', 'gt', 'lt', 'ge', 'le', 'sa', 'eb', 'ap']
         self.resource = resource
         self.search_parameters = search_parameters
@@ -139,11 +139,11 @@ class Search:
         Returns true if type allows modifier, else false
         """
         # TODO Add reference 'type' modifier logic
-        if modifier == 'missing': return True
+        if type_ == 'reference': return True
+        if modifier in ('missing', 'exists'): return True
         if modifier in ('exact', 'contains') and type_ == 'string': return True
         if modifier in ('text', 'in', 'below', 'above', 'not-in') and type_ == 'token': return True
         if modifier in ('below', 'above') and type_ == 'uri': return True
-        if type_ == reference: return True
         return False
 
     def getModifier(self, parameter):
