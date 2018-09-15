@@ -21,6 +21,7 @@ from .organization import mapping as org
 from .patient import mapping as patient
 from .practitioner import mapping as hp
 from .procedure import mapping as proc
+from .procedure_request import mapping as procr
 from .questionnaire import mapping as q
 from .questionnaire_response import mapping as qr
 from .schedule import mapping as sch
@@ -50,6 +51,7 @@ search_parameters = {
         'Patient': patient,
         'Practitioner': hp,
         'Procedure': proc,
+        'ProcedureRequest': procr,
         'Questionnaire': q,
         'QuestionnaireResponse': qr,
         'Schedule': sch,
