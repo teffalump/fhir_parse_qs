@@ -38,3 +38,15 @@ mapping = {
         'value-quantity':  'quantity',
         'value-string':  'string',
         }
+
+references = {
+        'based-on': ['ReferralRequest', 'CarePlan', 'MedicationRequest', 'NutritionOrder', 'ProcedureRequest', 'DeviceRequest', 'ImmunizationRecommendation'],
+        'context': ['EpisodeOfCare', 'Encounter'],
+        'device': ['Device', 'DeviceMetric'],
+        'encounter': ['Encounter'],
+        'patient': ['Patient'],
+        'performer': ['Practitioner', 'Organization', 'Patient', 'RelatedPerson'],
+        'related-target': ['Observation', 'Sequence', 'QuestionnaireResponse'],
+        'specimen': ['Specimen'],
+        'subject': ['Group', 'Device', 'Patient', 'Location'],
+        }

@@ -16,3 +16,9 @@ mapping = {
         'type':  'token',
         'verification-status':  'token',
         }
+
+references = {
+        'asserter': ['Patient', 'Practitioner', 'RelatedPerson'],
+        'patient': ['Patient'],
+        'recorder': ['Patient', 'Practitioner'],
+        }

@@ -25,3 +25,9 @@ mapping = {
     'phonetic': 'string',
     'telecom': 'token',
     }
+
+references = {
+        'general-practitioner': ['Practitioner', 'Organization'],
+        'link': ['Patient', 'RelatedPerson'],
+        'organization': ['Organization'],
+        }
