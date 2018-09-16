@@ -22,13 +22,14 @@ Generally only have included relevant Resources with maturity greater than 2. So
     search[0].modifier --> None
     search[0].prefix --> None
     search[0].value --> 'bob'
-    search[0].paramater --> 'name'
+    search[0].parameter --> 'name'
     search[0].type_ --> 'string'
+    search[0].chain --> None
 
     # act like dict with parameter as key (list if non-unique parameter)
     search['name'] --> FHIRSearch(...)
 
-    # can iterate over the paramater/value pairs
+    # can iterate over the parameter/value pairs
     for x in search:
          print(x) --> FHIRSearch(...)
 

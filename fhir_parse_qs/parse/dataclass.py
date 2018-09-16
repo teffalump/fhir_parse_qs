@@ -119,7 +119,7 @@ class Search:
             value = self.getValidType(type_, v)
             if value is False: raise ValueError('Cannot cast {} to type {}'.format(v, type_))
 
-            pairs.append(FHIRSearchPair(modifier=mod, prefix=pre, value=value, parameter=par, type_=type_, chain=chains or None))
+            pairs.append(FHIRSearchPair(modifier=mod, prefix=pre, value=value, parameter=par, type_=type_, chain=chains))
 
         return pairs
 
@@ -151,7 +151,7 @@ class Search:
         Returns true if type allows modifier, else false
         """
         # TODO Add reference 'type' modifier logic
-        if type_ == 'reference': return True
+        if type_ == 'reference': return True # e.g., :Patient.name, :Observation.id
         if modifier in ('missing', 'exists'): return True
         if modifier in ('exact', 'contains') and type_ == 'string': return True
         if modifier in ('text', 'in', 'below', 'above', 'not-in') and type_ == 'token': return True
@@ -160,19 +160,15 @@ class Search:
 
     def getModifier(self, parameter):
         """
-        Returns (base_parameter, mod) or (parameter, None)
+        Splits on ':'
 
-        Method: Base modifiers search, then do split on colons
+        Returns (base_parameter, modifier) or (parameter, None)
+
         """
-        if ':' in parameter:
-            for mod in self.allowed_basic_mods:
-                if parameter.endswith(mod):
-                    return parameter[:-len(mod)-1], mod
-
-            base, mod = parameter.split(':')
-            return base, mod
-
-        return parameter, None
+        base, *mod = parameter.split(':')
+        if mod:
+            return base, mod[0] #Should only be 1 (?)
+        return base, None
 
     def allowsChain(self, type_):
         """
@@ -182,12 +178,12 @@ class Search:
 
     def getChain(self, parameter):
         """
-        Parse chain - split on '.'
+        Parse chains - split on '.'
 
-        Returns (base_parameter, [chains]) or (parameter, [])
+        Returns (base_parameter, [chain(s)]) or (parameter, None)
         """
         base, *chain = parameter.split('.')
-        return base, chain
+        return base, chain or None
 
     @property
     def modifier(self):
