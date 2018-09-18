@@ -5,12 +5,13 @@ from fhir_parse_qs.mappings import search_parameters
 __all__=['Search']
 
 FHIRSearchPair = namedtuple("FHIRSearchPair", 'modifier prefix parameter value type_ chain')
+FHIRChain = namedtuple("FHIRChain", 'endpoint target ttype')
 
 class Search:
     """
     A FHIR search query:
 
-    resource is string of the FHIR resource
+    resource is string of the FHIR resource (i.e., endpoint)
     query_string is string of the query string
     mapping is dict of {search_param: type} that overrides default (optional)
 
@@ -23,6 +24,7 @@ class Search:
         self.resource = resource
         self.search_parameters = search_parameters
         self.qs = query_string
+        self.errors = []
         self.search_types = {
                 'number': float,
                 'string': str,
@@ -33,8 +35,6 @@ class Search:
                 'quantity': str,
                 'uri': str
                 }
-
-        self.errors = []
 
         if not mapping:
             try:
@@ -94,7 +94,11 @@ class Search:
             par, mod = self.getModifier(param)
 
             # Chain parsing
-            par, chains = self.getChain(par)
+            if mod and self.getChain(mod)[1]:
+                # e.g., :Patient.name
+                _, chains = self.getChain(mod) #TODO Save endpoint marker
+            else:
+                par, chains = self.getChain(par)
 
             # If parameter not supported, ignore and add to errors
             try:
@@ -185,6 +189,20 @@ class Search:
         base, *chain = parameter.split('.')
         return base, chain or None
 
+    def getChainTree(self, parameter, chains):
+        """
+        Get the chain tree
+
+        """
+
+        def dive(endpoint, parameter, chains):
+            if not chains: return FHIRChain(endpoint=ep, target=parameter, ttype=self.mapping[endpoint][parameter])
+            else:
+                new_endpoint = self.references[endpoint][parameter]
+                if len(new_endpoint) > 1:
+                    raise ValueError('Ambiguous chain')
+                return dive(new_endpoint, chains[0], chains[1:])
+
     @property
     def modifier(self):
         """
@@ -216,27 +234,27 @@ class Search:
     @property
     def endpoint(self):
         """
-        Returns the search resource
+        Returns the endpoint
         """
         return self.resource
 
     @property
     def unparsed(self):
         """
-        Raw query string
+        Returns the raw query string
         """
         return self.qs
 
     @property
     def parsed(self):
         """
-        Returns list of search queries
+        Returns the list of search queries
         """
         return self.parsed_qs
 
     @property
     def error(self):
         """
-        Non-critical errors during parsing
+        Returns non-critical errors during parsing
         """
         return self.errors
