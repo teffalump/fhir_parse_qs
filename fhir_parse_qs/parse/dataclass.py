@@ -1,6 +1,6 @@
 from collections import namedtuple
 from pendulum import parse
-from fhir_parse_qs.mappings import search_parameters
+from fhir_parse_qs.mappings import (search_references, search_types)
 
 __all__=['Search']
 
@@ -22,10 +22,11 @@ class Search:
         self.allowed_basic_mods = ['exact', 'missing', 'exists', 'contains', 'text', 'in', 'above', 'below', 'not-in']
         self.allowed_prefixes = ['eq', 'ne', 'gt', 'lt', 'ge', 'le', 'sa', 'eb', 'ap']
         self.resource = resource
-        self.search_parameters = search_parameters
+        self.search_types = search_types
+        self.search_references = search_references
         self.qs = query_string
         self.errors = []
-        self.search_types = {
+        self.search_cast = {
                 'number': float,
                 'string': str,
                 'reference': str,
@@ -38,9 +39,9 @@ class Search:
 
         if not mapping:
             try:
-                self.search_mapping = self.search_parameters[resource][0]
-                self.search_mapping.update(self.search_parameters['ctrl_parameters']) #update with common
-                self.search_mapping.update(self.search_parameters['common_parameters']) #update with common
+                self.search_mapping = self.search_types[resource]
+                self.search_mapping.update(self.search_types['ctrl_parameters']) #update with common
+                self.search_mapping.update(self.search_types['common_parameters']) #update with common
             except:
                 raise ValueError('{} is not a supported endpoint; Please provide mapping'.format(resource))
         else:
@@ -138,7 +139,7 @@ class Search:
         Returns parsed value if correct type or False
         """
         try:
-            return self.search_types[type_](value)
+            return self.search_cast[type_](value)
         except:
             return False
 
@@ -208,12 +209,12 @@ class Search:
         if len(endpoint) != 1:
             raise ValueError('Ambiguous chain')
         endpoint = endpoint[0]
-        ttype = self.search_parameters[endpoint][0][parameter]
+        ttype = self.search_types[endpoint][parameter]
         if not chains: return [FHIRChain(endpoint=endpoint, target=parameter, ttype=ttype)]
         else:
             current = [FHIRChain(endpoint=endpoint, target=parameter, ttype=ttype)]
             new_target = chains.pop(0)
-            new_endpoints = self.search_parameters[endpoint][1][parameter]
+            new_endpoints = self.search_references[endpoint][parameter]
             return current + self.getChainTree(new_endpoints, new_target, chains)
 
 
