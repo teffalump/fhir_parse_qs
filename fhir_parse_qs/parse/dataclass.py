@@ -72,7 +72,7 @@ class Search:
             return found
 
     def __repr__(self):
-        return '<FHIR search on {}, {} parameters>'.format(self.resource, len(self.parsed_qs))
+        return '<FHIR search on {}, {} parameter(s)>'.format(self.resource, len(self.parsed_qs))
 
     def __len__(self):
         return len(self.parsed_qs)
@@ -120,7 +120,10 @@ class Search:
             pre, v = self.getPrefix(value, type_)
 
             # parse the chains
-            chain_tree = self.getChainTree(par, chains)
+            if chains:
+                chain_tree = self.getChainTree([self.resource], par, chains)[1:] #ignore first parameter
+            else:
+                chain_tree = None
 
             #Get validated value
             value = self.getValidType(type_, v)
@@ -192,24 +195,26 @@ class Search:
         base, *chain = parameter.split('.')
         return base, chain or None
 
-    def getChainTree(self, parameter, chains):
+    def getChainTree(self, endpoint, parameter, chains):
         """
         Get the chain tree
 
+        Endpoint: List of possible endpoints
+        Parameter: Current parameter
+        Chains: Rest of chains
+
+        #TODO Multi-endpoints
         """
-
-        def dive(endpoint, parameter, chains):
-            if not chains: return [FHIRChain(endpoint=endpoint, target=parameter, ttype=self.search_parameters[endpoint][0][parameter])]
-            else:
-                new_endpoints = self.search_parameters[endpoint][1][parameter]
-                if len(new_endpoints) > 1:
-                    raise ValueError('Ambiguous chain')
-                else:
-                    current = FHIRChain(endpoint=endpoint, target=parameter, ttype=self.search_parameters[endpoint][0][parameter])
-                    return [current] + dive(new_endpoints[0], chains[0], chains[1:])
-
-        # start at current
-        return dive(self.resource, parameter, chains)
+        if len(endpoint) != 1:
+            raise ValueError('Ambiguous chain')
+        endpoint = endpoint[0]
+        ttype = self.search_parameters[endpoint][0][parameter]
+        if not chains: return [FHIRChain(endpoint=endpoint, target=parameter, ttype=ttype)]
+        else:
+            current = [FHIRChain(endpoint=endpoint, target=parameter, ttype=ttype)]
+            new_target = chains.pop(0)
+            new_endpoints = self.search_parameters[endpoint][1][parameter]
+            return current + self.getChainTree(new_endpoints, new_target, chains)
 
 
     @property
