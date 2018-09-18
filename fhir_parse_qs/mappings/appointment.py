@@ -11,3 +11,11 @@ mapping = {
         'service-type':  'token',
         'status':  'token',
         }
+
+references = {
+        'actor': ['Practitioner', 'Device', 'Patient', 'HealthcareService', 'RelatedPerson', 'Location'],
+        'incomingreferral': ['ReferralRequest'],
+        'location': ['Location'],
+        'patient': ['Patient'],
+        'practitioner': ['Practitioner'],
+        }

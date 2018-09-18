@@ -23,3 +23,11 @@ mapping = {
     'subject': 'reference',
     'verification-status': 'token',
     }
+
+references = {
+        'asserter': ['Practitioner', 'Patient', 'RelatedPerson'],
+        'context': ['EpisodeOfCare', 'Encounter'],
+        'encounter': ['Encounter'],
+        'patient': ['Patient'],
+        'subject': ['Group', 'Patient'],
+        }

@@ -38,7 +38,7 @@ class Search:
 
         if not mapping:
             try:
-                self.search_mapping = self.search_parameters[resource]
+                self.search_mapping = self.search_parameters[resource][0]
                 self.search_mapping.update(self.search_parameters['ctrl_parameters']) #update with common
                 self.search_mapping.update(self.search_parameters['common_parameters']) #update with common
             except:
@@ -119,11 +119,14 @@ class Search:
             #Prefix
             pre, v = self.getPrefix(value, type_)
 
+            # parse the chains
+            chain_tree = self.getChainTree(par, chains)
+
             #Get validated value
             value = self.getValidType(type_, v)
             if value is False: raise ValueError('Cannot cast {} to type {}'.format(v, type_))
 
-            pairs.append(FHIRSearchPair(modifier=mod, prefix=pre, value=value, parameter=par, type_=type_, chain=chains))
+            pairs.append(FHIRSearchPair(modifier=mod, prefix=pre, value=value, parameter=par, type_=type_, chain=chain_tree))
 
         return pairs
 
@@ -196,12 +199,18 @@ class Search:
         """
 
         def dive(endpoint, parameter, chains):
-            if not chains: return FHIRChain(endpoint=ep, target=parameter, ttype=self.mapping[endpoint][parameter])
+            if not chains: return [FHIRChain(endpoint=endpoint, target=parameter, ttype=self.search_parameters[endpoint][0][parameter])]
             else:
-                new_endpoint = self.references[endpoint][parameter]
-                if len(new_endpoint) > 1:
+                new_endpoints = self.search_parameters[endpoint][1][parameter]
+                if len(new_endpoints) > 1:
                     raise ValueError('Ambiguous chain')
-                return dive(new_endpoint, chains[0], chains[1:])
+                else:
+                    current = FHIRChain(endpoint=endpoint, target=parameter, ttype=self.search_parameters[endpoint][0][parameter])
+                    return [current] + dive(new_endpoints[0], chains[0], chains[1:])
+
+        # start at current
+        return dive(self.resource, parameter, chains)
+
 
     @property
     def modifier(self):

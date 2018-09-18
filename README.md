@@ -37,8 +37,11 @@ Generally only have included relevant Resources with maturity greater than 2. So
     search = Search('Patient', 'random=test')
     search.error --> [...]
 
-    # chains, does not verify target types yet
-    search = Search('Observation', 'subject.name=peter')
-    search[0].parameter --> 'subject'
+    # chains - namedtuple with endpoint target_parameter, target_type
+    search = Search('Observation', 'patient.name=peter')
+    search[0].parameter --> 'patient'
     search[0].value --> 'peter'
-    search[0].chain --> ['name']
+    search[0].chain --> [FHIRChain(...)]
+    search[0].chain[0].endpoint = 'Patient'
+    search[0].chain[0].target = 'name'
+    search[0].chain[0].ttype = 'string'
