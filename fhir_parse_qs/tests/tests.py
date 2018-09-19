@@ -7,7 +7,7 @@ qss = [
         ('AllergyIntolerance', 'patient=42&_list=$current-allergies'),
         ('Patient', 'given:contains=eve'),
         ('Procedure', 'date=ge2010-01-01&date=le2011-12-31'),
-        ('Observation', 'patient.name=peter'),
+        ('Observation', 'subject:Patient.name=peter'),
         ('Observation', 'code=http://loinc.org|1234-5&subject.name=peter'),
         ('Observation', 'filter=name eq http://loinc.org|1234-5 and subject.name co "peter"'),
         ('DiagnosticReport', 'result.code-value-quantity=http://loinc.org|2823-3$gt5.4|http://unitsofmeasure.org|mmol/L'),
@@ -48,12 +48,12 @@ class TestQS(unittest.TestCase):
 
     def test_chain(self):
         s = Search(*qss[5])
-        assert not s['patient'].modifier
-        assert s['patient'].chain[0].ttype == 'string'
-        assert s['patient'].chain[0].target == 'name'
-        assert s['patient'].chain[0].endpoint == 'Patient'
-        assert s['patient'].value == 'peter'
-        assert s['patient'].parameter == 'patient'
+        assert not s['subject'].modifier
+        assert s['subject'].chain[0].ttype == 'string'
+        assert s['subject'].chain[0].target == 'name'
+        assert s['subject'].chain[0].endpoint == 'Patient'
+        assert s['subject'].value == 'peter'
+        assert s['subject'].parameter == 'subject'
 
     def test_mod_plus(self):
         s = Search(*qss[-2])

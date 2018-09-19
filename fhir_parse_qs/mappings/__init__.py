@@ -10,7 +10,9 @@ from .appointment_response import references as r_apptr
 from .condition import mapping as condition
 from .condition import references as r_condition
 from .diagnostic_report import mapping as dr
+from .diagnostic_report import references as r_dr
 from .encounter import mapping as enc
+from .encounter import references as r_enc
 from .family_member_history import mapping as fm
 from .imaging_study import mapping as img
 from .immunization import mapping as im
@@ -68,8 +70,8 @@ search_references = {
         'Appointment': r_appt,
         'AppointmentResponse': r_apptr,
         'Condition': r_condition,
-        'DiagnosticReport': None,
-        'Encounter': None,
+        'DiagnosticReport': r_dr,
+        'Encounter': r_enc,
         'FamilyMemberHistory': None,
         'ImagingStudy': None,
         'Immunization': None,

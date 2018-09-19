@@ -16,3 +16,15 @@ mapping = {
         'status':  'token',
         'subject':  'reference',
         }
+
+references = {
+        'based-on': ['ReferralRequest', 'CarePlan', 'MedicationRequest', 'NutritionOrder', 'ProcedureRequest', 'ImmunizationRecommendation'],
+        'context': ['EpisodeOfCare', 'Encounter'],
+        'encounter': ['Encounter'],
+        'image': ['Media'],
+        'patient': ['Patient'],
+        'performer': ['Practitioner', 'Organization'],
+        'result': ['Observation'],
+        'specimen': ['Specimen'],
+        'subject': ['Group', 'Device', 'Patient', 'Location'],
+        }

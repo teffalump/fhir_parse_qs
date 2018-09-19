@@ -22,8 +22,8 @@ class Search:
         self.allowed_basic_mods = ['exact', 'missing', 'exists', 'contains', 'text', 'in', 'above', 'below', 'not-in']
         self.allowed_prefixes = ['eq', 'ne', 'gt', 'lt', 'ge', 'le', 'sa', 'eb', 'ap']
         self.resource = resource
-        self.search_types = search_types
-        self.search_references = search_references
+        self.all_types = search_types
+        self.all_references = search_references
         self.qs = query_string
         self.errors = []
         self.search_cast = {
@@ -39,9 +39,9 @@ class Search:
 
         if not mapping:
             try:
-                self.search_mapping = self.search_types[resource]
-                self.search_mapping.update(self.search_types['ctrl_parameters']) #update with common
-                self.search_mapping.update(self.search_types['common_parameters']) #update with common
+                self.search_mapping = self.all_types[resource]
+                self.search_mapping.update(self.all_types['ctrl_parameters']) #update with common
+                self.search_mapping.update(self.all_types['common_parameters']) #update with common
             except:
                 raise ValueError('{} is not a supported endpoint; Please provide mapping'.format(resource))
         else:
@@ -91,13 +91,19 @@ class Search:
         pairs = []
         for param, value in naive_pairs:
 
+            # 1) Get any modifiers on parameter
+            # 2) Parse any chains on parameter
+            # 3) Parse any prefixes on value
+            # 4) Cast the value to type
+
             #Get modifier
             par, mod = self.getModifier(param)
 
             # Chain parsing
             if mod and self.getChain(mod)[1]:
                 # e.g., :Patient.name
-                _, chains = self.getChain(mod) #TODO Save endpoint marker
+                target_ep, chains = self.getChain(mod)
+                mod = None #not a true modifier
             else:
                 par, chains = self.getChain(par)
 
@@ -113,18 +119,27 @@ class Search:
                 self.errors.append('Parameter <{}> does not allow chaining; Ignoring'.format(par))
                 continue
 
+            # Chains
+            if chains:
+                # If there is specific endpoint
+                if target_ep:
+                    if target_ep in self.all_references[self.resource][par]:
+                        start = chains.pop(0)
+                        chain_tree = self.getChainTree([target_ep], start, chains)
+                    else:
+                        self.errors.append('{} is not valid reference for {} parameter'.format(target_ep, par))
+                else:
+                    chain_tree = self.getChainTree([self.resource], par, chains)[1:] #ignore first parameter
+            else:
+                chain_tree = None
+
+
             if mod:
                 if not self.validModifier(mod, type_):
                     raise TypeError('The {} search parameter cannot have modifier {}'.format(par, mod))
 
             #Prefix
             pre, v = self.getPrefix(value, type_)
-
-            # parse the chains
-            if chains:
-                chain_tree = self.getChainTree([self.resource], par, chains)[1:] #ignore first parameter
-            else:
-                chain_tree = None
 
             #Get validated value
             value = self.getValidType(type_, v)
@@ -209,12 +224,12 @@ class Search:
         if len(endpoint) != 1:
             raise ValueError('Ambiguous chain')
         endpoint = endpoint[0]
-        ttype = self.search_types[endpoint][parameter]
+        ttype = self.all_types[endpoint][parameter]
         if not chains: return [FHIRChain(endpoint=endpoint, target=parameter, ttype=ttype)]
         else:
             current = [FHIRChain(endpoint=endpoint, target=parameter, ttype=ttype)]
             new_target = chains.pop(0)
-            new_endpoints = self.search_references[endpoint][parameter]
+            new_endpoints = self.all_references[endpoint][parameter]
             return current + self.getChainTree(new_endpoints, new_target, chains)
 
 

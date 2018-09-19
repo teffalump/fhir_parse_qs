@@ -21,3 +21,18 @@ mapping = {
         'subject':  'reference',
         'type':  'token',
         }
+
+references = {
+        'appointment': ['Appointment'],
+        'diagnosis': ['Condition', 'Procedure'],
+        'episodeofcare': ['EpisodeOfCare'],
+        'incomingreferral': ['ReferralRequest'],
+        'location': ['Location'],
+        'part-of': ['Encounter'],
+        'participant': ['Practitioner', 'RelatedPerson'],
+        'patient': ['Patient'],
+        'practitioner': ['Practitioner'],
+        'service-provider': ['Organization'],
+        'subject': ['Group', 'Patient'],
+        }
+
