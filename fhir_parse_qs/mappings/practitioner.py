@@ -17,3 +17,6 @@ mapping = {
         'phonetic':  'string',
         'telecom':  'token',
         }
+
+references = {
+        }

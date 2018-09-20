@@ -13,3 +13,8 @@ mapping = {
         'phonetic':  'string',
         'type':  'token',
         }
+
+references = {
+        'endpoint': ['Endpoint'],
+        'partof': ['Organization'],
+        }

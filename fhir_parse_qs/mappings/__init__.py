@@ -30,9 +30,11 @@ from .medication_statement import mapping as ms
 from .observation import mapping as obs
 from .observation import references as r_obs
 from .organization import mapping as org
+from .organization import references as r_org
 from .patient import mapping as patient
 from .patient import references as r_patient
 from .practitioner import mapping as hp
+from .practitioner import references as r_hp
 from .procedure import mapping as proc
 from .procedure_request import mapping as procr
 from .questionnaire import mapping as q
@@ -89,9 +91,9 @@ search_references = {
         'MedicationRequest': None,
         'MedicationStatement': None,
         'Observation': r_obs,
-        'Organization': None,
+        'Organization': r_org,
         'Patient': r_patient,
-        'Practitioner': None,
+        'Practitioner': r_hp,
         'Procedure': None,
         'ProcedureRequest': None,
         'Questionnaire': None,
