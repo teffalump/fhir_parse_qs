@@ -5,3 +5,7 @@ mapping = {
         'start':  'date',
         'status':  'token',
         }
+
+references = {
+        'schedule': ['Schedule'],
+        }

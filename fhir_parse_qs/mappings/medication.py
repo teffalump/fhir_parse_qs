@@ -10,3 +10,9 @@ mapping = {
         'package-item-code':  'token',
         'status':  'token',
         }
+
+references = {
+        'ingredient': ['Medication', 'Substance'],
+        'manufacturer': ['Organization'],
+        'package-item': ['Medication'],
+        }

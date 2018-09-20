@@ -15,3 +15,11 @@ mapping = {
         'status':  'token',
         'vaccine-code':  'token',
         }
+
+immunization = {
+        'location': ['Location'],
+        'manufacturer': ['Organization'],
+        'patient': ['Patient'],
+        'practitioner': ['Practitioner'],
+        'reaction': ['Observation'],
+        }

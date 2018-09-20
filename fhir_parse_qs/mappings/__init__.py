@@ -14,10 +14,15 @@ from .diagnostic_report import references as r_dr
 from .encounter import mapping as enc
 from .encounter import references as r_enc
 from .family_member_history import mapping as fm
+from .family_member_history import references as r_fm
 from .imaging_study import mapping as img
+from .imaging_study import references as r_img
 from .immunization import mapping as im
+from .immunization import references as r_im
 from .location import mapping as loc
+from .location import references as r_loc
 from. medication import mapping as m
+from. medication import references as r_m
 from .medication_administration import mapping as ma
 from .medication_dispense import mapping as md
 from .medication_request import mapping as mr
@@ -33,7 +38,9 @@ from .procedure_request import mapping as procr
 from .questionnaire import mapping as q
 from .questionnaire_response import mapping as qr
 from .schedule import mapping as sch
+from .schedule import references as r_sch
 from .slot import mapping as slot
+from .slot import references as r_slot
 
 search_types = {
         'ctrl_parameters': control_parameters,
@@ -72,11 +79,11 @@ search_references = {
         'Condition': r_condition,
         'DiagnosticReport': r_dr,
         'Encounter': r_enc,
-        'FamilyMemberHistory': None,
-        'ImagingStudy': None,
-        'Immunization': None,
-        'Location': None,
-        'Medication': None,
+        'FamilyMemberHistory': r_fm,
+        'ImagingStudy': r_img,
+        'Immunization': r_im,
+        'Location': r_loc,
+        'Medication': r_m,
         'MedicationAdministration': None,
         'MedicationDispense': None,
         'MedicationRequest': None,
@@ -89,6 +96,6 @@ search_references = {
         'ProcedureRequest': None,
         'Questionnaire': None,
         'QuestionnaireResponse': None,
-        'Schedule': None,
-        'Slot': None,
+        'Schedule': r_sch,
+        'Slot': r_slot,
         }

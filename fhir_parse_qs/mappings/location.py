@@ -16,3 +16,9 @@ mapping = {
         'status':  'token',
         'type':  'token',
         }
+
+references = {
+        'endpoint': ['Endpoint'],
+        'organization': ['Organization'],
+        'partof': ['Location'],
+        }

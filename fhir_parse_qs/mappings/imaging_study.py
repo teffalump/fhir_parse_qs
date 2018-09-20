@@ -15,3 +15,11 @@ mapping = {
         'study':  'uri',
         'uid':  'uri',
         }
+
+references = {
+        'basedon': ['ReferralRequest', 'CarePlan', 'ProcedureRequest'],
+        'context': ['EpisodeOfCare', 'Encounter'],
+        'endpoint': ['Endpoint'],
+        'patient': ['Patient'],
+        'performer': ['Practitioner'],
+        }

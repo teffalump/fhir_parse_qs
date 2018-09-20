@@ -8,3 +8,8 @@ mapping = {
         'relationship':  'token',
         'status':  'token',
         }
+
+references = {
+        'definition': ['Questionnaire', 'PlanDefinition'],
+        'patient': ['Patient'],
+        }
