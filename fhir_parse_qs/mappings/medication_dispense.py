@@ -15,3 +15,15 @@ mapping = {
         'whenhandedover':  'date',
         'whenprepared':  'date',
         }
+
+references = {
+        'context': ['EpisodeOfCare', 'Encounter'],
+        'destination': ['Location'],
+        'medication': ['Medication'],
+        'patient': ['Patient'],
+        'performer': ['Practitioner', 'Organization', 'Device', 'Patient', 'RelatedPerson'],
+        'prescription': ['MedicationRequest'],
+        'receiver': ['Practitioner', 'Patient'],
+        'responsibleparty': ['Practitioner'],
+        'subject': ['Group', 'Patient'],
+        }

@@ -12,3 +12,6 @@ mapping = {
         'url':  'uri',
         'version':  'token',
         }
+
+references = {
+        }

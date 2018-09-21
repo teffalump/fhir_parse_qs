@@ -14,3 +14,13 @@ mapping = {
         'status':  'token',
         'subject':  'reference',
         }
+
+references = {
+        'context': ['EpisodeOfCare', 'Encounter'],
+        'device': ['Device'],
+        'medication': ['Medication'],
+        'patient': ['Patient'],
+        'performer': ['Practitioner', 'Device', 'Patient', 'RelatedPerson'],
+        'prescription': ['MedicationRequest'],
+        'subject': ['Group', 'Patient'],
+        }

@@ -14,3 +14,15 @@ mapping = {
         'status': 'token',
         'subject': 'reference',
         }
+
+references = {
+        'based-on': ['ReferralRequest', 'CarePlan', 'ProcedureRequest'],
+        'context': ['EpisodeOfCare', 'Encounter'],
+        'definition': ['PlanDefinition', 'HealthcareService', 'ActivityDefinition'],
+        'encounter': ['Encounter'],
+        'location': ['Location'],
+        'part-of': ['Observation', 'Procedure', 'MedicationAdministration'],
+        'patient': ['Patient'],
+        'performer': ['Practitioner', 'Organization', 'Device', 'Patient', 'RelatedPerson'],
+        'subject': ['Group', 'Patient'],
+        }

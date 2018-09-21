@@ -24,9 +24,13 @@ from .location import references as r_loc
 from. medication import mapping as m
 from. medication import references as r_m
 from .medication_administration import mapping as ma
+from .medication_administration import references as r_ma
 from .medication_dispense import mapping as md
+from .medication_dispense import references as r_md
 from .medication_request import mapping as mr
+from .medication_request import references as r_mr
 from .medication_statement import mapping as ms
+from .medication_statement import references as r_ms
 from .observation import mapping as obs
 from .observation import references as r_obs
 from .organization import mapping as org
@@ -36,9 +40,13 @@ from .patient import references as r_patient
 from .practitioner import mapping as hp
 from .practitioner import references as r_hp
 from .procedure import mapping as proc
+from .procedure import references as r_proc
 from .procedure_request import mapping as procr
+from .procedure_request import references as r_procr
 from .questionnaire import mapping as q
+from .questionnaire import references as r_q
 from .questionnaire_response import mapping as qr
+from .questionnaire_response import references as r_qr
 from .schedule import mapping as sch
 from .schedule import references as r_sch
 from .slot import mapping as slot
@@ -86,18 +94,18 @@ search_references = {
         'Immunization': r_im,
         'Location': r_loc,
         'Medication': r_m,
-        'MedicationAdministration': None,
-        'MedicationDispense': None,
-        'MedicationRequest': None,
-        'MedicationStatement': None,
+        'MedicationAdministration': r_ma,
+        'MedicationDispense': r_md,
+        'MedicationRequest': r_mr,
+        'MedicationStatement': r_ms,
         'Observation': r_obs,
         'Organization': r_org,
         'Patient': r_patient,
         'Practitioner': r_hp,
-        'Procedure': None,
-        'ProcedureRequest': None,
-        'Questionnaire': None,
-        'QuestionnaireResponse': None,
+        'Procedure': r_proc,
+        'ProcedureRequest': r_procr,
+        'Questionnaire': r_q,
+        'QuestionnaireResponse': r_qr,
         'Schedule': r_sch,
         'Slot': r_slot,
         }

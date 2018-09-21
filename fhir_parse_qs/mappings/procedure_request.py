@@ -20,3 +20,16 @@ mapping = {
         'status':  'token',
         'subject':  'reference',
         }
+
+references = {
+        'based-on': [], #ANY????
+        'context': ['EpisodeOfCare', 'Encounter'],
+        'definition': ['PlanDefinition', 'ActivityDefinition'],
+        'encounter': ['Encounter'],
+        'patient': ['Patient'],
+        'performer': ['Practitioner', 'Organization', 'Device', 'Patient', 'HealthcareService', 'RelatedPerson'],
+        'replaces': [], #ANY???
+        'requester': ['Practitioner', 'Organization', 'Device'],
+        'specimen': ['Specimen'],
+        'subject': ['Group', 'Device', 'Patient', 'Location'],
+        }
