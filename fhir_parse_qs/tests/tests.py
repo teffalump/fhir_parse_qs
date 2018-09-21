@@ -1,53 +1,59 @@
 import unittest
 from fhir_parse_qs import Search
+from datetime import datetime
+from pendulum import now
 
 qss = [
-        ('Patient', 'gender=female'),
-        ('Patient', '_list=42&gender=female'),
-        ('AllergyIntolerance', 'patient=42&_list=$current-allergies'),
-        ('Patient', 'given:contains=eve'),
-        ('Procedure', 'date=ge2010-01-01&date=le2011-12-31'),
-        ('Observation', 'subject:Patient.name=peter'),
-        ('Observation', 'code=http://loinc.org|1234-5&subject.name=peter'),
         ('Observation', 'filter=name eq http://loinc.org|1234-5 and subject.name co "peter"'),
         ('DiagnosticReport', 'result.code-value-quantity=http://loinc.org|2823-3$gt5.4|http://unitsofmeasure.org|mmol/L'),
         ('Patient', '_has:Observation:patient:_has:AuditEvent:entity:user=MyUserId'),
-        ('AllergyIntolerance', 'clinical-status=active&clinical-status:exists=false'),
-        ('Condition', '_text=(bone OR liver) and metastases'),
         ]
 
 class TestQS(unittest.TestCase):
 
     def test_basic(self):
-        s = Search(*qss[0])
+        s = Search('Patient', 'gender=female')
         assert len(s) == 1
         assert s.endpoint == 'Patient'
         assert not s.modifier
         assert not s.prefix
 
     def test_basic_plus(self):
-        s = Search(*qss[1])
+        s = Search('Patient', '_list=42&gender=female')
         assert s.endpoint == 'Patient'
         assert len(s) == 2
         assert s['_list'].value == '42'
         assert s['gender'].value == 'female'
         assert not s.modifier
 
-    #def test_basic_plus2(self):
-        #s = Search(*qss[2])
-        #assert s.endpoint == 'AllergyIntolerance'
-        #assert len(s) == 2
-        #assert s['_list'].value == '$current_allergies'
+    def test_basic_plus2(self):
+        s = Search('AllergyIntolerance', 'patient=42&_list=$current-allergies')
+        assert s.endpoint == 'AllergyIntolerance'
+        assert len(s) == 2
+        assert s['_list'].value == '$current-allergies'
 
     def test_mod(self):
-        s = Search(*qss[3])
+        s = Search('Patient', 'given:contains=eve')
         assert s[0].modifier == 'contains'
         assert s[0].value == 'eve'
         assert s[0].parameter == 'given'
         assert not s.prefix
 
+    def test_prefix_cast(self):
+        s = Search('Procedure', 'date=ge2010-01-01&date=le2011-12-31')
+        assert s.endpoint == 'Procedure'
+        assert len(s) == 2
+        assert len(s['date']) == 2
+        assert 'ge' in s.prefix
+        assert 'le' in s.prefix
+        n = now('Europe/London')
+        assert isinstance(s['date'][0].value, datetime)
+        assert s['date'][0].value < n
+        assert isinstance(s['date'][1].value, datetime)
+        assert s['date'][1].value < n
+
     def test_chain(self):
-        s = Search(*qss[5])
+        s = Search('Observation', 'subject:Patient.name=peter')
         assert not s['subject'].modifier
         assert s['subject'].chain[0].ttype == 'string'
         assert s['subject'].chain[0].target == 'name'
@@ -55,25 +61,24 @@ class TestQS(unittest.TestCase):
         assert s['subject'].value == 'peter'
         assert s['subject'].parameter == 'subject'
 
+    #def test_chain_plus(self):
+        #s = Search('Observation', 'code=http://loinc.org|1234-5&subject.name=peter')
+        #assert s['code'].value == 'http://loinc.org|1234-5'
+        #assert s['subject'].value == 'peter'
+        #assert s['subject'].chain[0].endpoint == 'Patient'
+        #assert s['subject'].chain[0].ttype == 'string'
+        #assert s['subject'].chain[0].target == 'name'
+
     def test_mod_plus(self):
-        s = Search(*qss[-2])
+        s = Search('AllergyIntolerance', 'clinical-status=active&clinical-status:exists=false')
         assert len(s['clinical-status']) == 2
         assert s['clinical-status'][0].value == 'active'
         assert not s['clinical-status'][0].modifier
         assert s['clinical-status'][1].value == 'false'
         assert s['clinical-status'][1].modifier == 'exists'
 
-    def test_prefix(self):
-        #TODO More
-        s = Search(*qss[4])
-        assert s.endpoint == 'Procedure'
-        assert len(s) == 2
-        assert len(s['date']) == 2
-        assert 'ge' in s.prefix
-        assert 'le' in s.prefix
-
     def test_or(self):
-        s = Search(*qss[-1])
+        s = Search('Condition', '_text=(bone OR liver) and metastases')
         assert s[0].value == '(bone OR liver) and metastases'
         assert s[0].parameter == '_text'
 
