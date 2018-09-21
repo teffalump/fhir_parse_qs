@@ -9,7 +9,7 @@ NAME = 'fhir_parse_qs'
 try:
     from pypandoc import convert_file
     read_md = lambda f: convert_file(f, 'rst')
-except ImportError:
+except ModuleNotFoundError:
     print('warning: pypandoc module not found, cannot covert Markdown to RST')
     read_md = open(f, 'r').read()
 
