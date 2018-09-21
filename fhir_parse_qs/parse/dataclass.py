@@ -133,6 +133,9 @@ class Search:
             else:
                 chain_tree = None
 
+            #Chain overrules the original type
+            if chain_tree:
+                type_ = chain_tree[-1].ttype
 
             if mod:
                 if not self.validModifier(mod, type_):
@@ -141,7 +144,7 @@ class Search:
             #Prefix
             pre, v = self.getPrefix(value, type_)
 
-            #Get validated value
+            #Cast the value
             value = self.getValidType(type_, v)
             if value is False: raise ValueError('Cannot cast {} to type {}'.format(v, type_))
 

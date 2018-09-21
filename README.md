@@ -37,7 +37,7 @@ Generally only have included relevant Resources with maturity greater than 2. So
     search = Search('Patient', 'random=test')
     search.error --> [...]
 
-    # chains - namedtuple with endpoint target_parameter, target_type
+    # chains - namedtuple with endpoint, target_parameter, target_type
     search = Search('Observation', 'patient.name=peter')
     search[0].parameter --> 'patient'
     search[0].value --> 'peter'
