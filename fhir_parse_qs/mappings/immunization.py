@@ -16,7 +16,7 @@ mapping = {
         'vaccine-code':  'token',
         }
 
-immunization = {
+references = {
         'location': ['Location'],
         'manufacturer': ['Organization'],
         'patient': ['Patient'],
