@@ -59,12 +59,12 @@ class TestQS(unittest.TestCase):
 
     def test_chain(self):
         s = Search('Observation', 'subject:Patient.name=peter')
-        assert not s['subject'].modifier
-        assert s['subject'].chain[1].ttype == 'string'
-        assert s['subject'].chain[1].target == 'name'
-        assert s['subject'].chain[1].endpoint == 'Patient'
-        assert s['subject'].value == 'peter'
-        assert s['subject'].parameter == 'subject'
+        assert not s['name'].modifier
+        assert s['name'].type_ == 'string'
+        assert s['name'].chain[0].target == 'subject'
+        assert s['name'].chain[1].endpoint == 'Patient'
+        assert s['name'].chain[0].endpoint == 'Observation'
+        assert s['name'].value == 'peter'
         try:
             s = Search('Observation', 'subject:Patient.organization=peter')
         except TypeError:

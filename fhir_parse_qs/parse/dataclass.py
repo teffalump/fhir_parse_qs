@@ -139,13 +139,14 @@ class Search:
             else:
                 chain_tree = None
 
-            #Chain overrules the original type
+            #Chain overrules the original type and parameter
             if chain_tree:
                 type_ = chain_tree[-1].ttype
+                par = chain_tree[-1].target
 
             if mod:
                 if not self.validModifier(mod, type_):
-                    raise TypeError('<parameter> \'{}\' cannot have modifier \'{}\''.format(par, mod))
+                    raise TypeError('<parameter> \'{}\' of <type> \'{}\' cannot have modifier \'{}\''.format(par, type_, mod))
 
             #Prefix
             pre, v = self.getPrefix(value, type_)

@@ -39,9 +39,12 @@ Generally only have included relevant Resources with maturity greater than 2. So
 
     # chains - namedtuple with endpoint, target_parameter, target_type
     search = Search('Observation', 'patient.name=peter')
-    search[0].parameter --> 'patient'
+    search[0].parameter --> 'name' # last parameter in chain
     search[0].value --> 'peter'
-    search[0].chain --> [FHIRChain(...)]
-    search[0].chain[0].endpoint = 'Patient'
-    search[0].chain[0].target = 'name'
-    search[0].chain[0].ttype = 'string'
+    search[0].chain --> [FHIRChain(...), FHIRChain(...)]
+    search[0].chain[0].endpoint = 'Observation'
+    search[0].chain[0].target = 'patient'
+    search[0].chain[0].ttype = 'reference'
+    search[0].chain[1].endpoint = 'Patient'
+    search[0].chain[1].target = 'name'
+    search[0].chain[1].ttype = 'string'
