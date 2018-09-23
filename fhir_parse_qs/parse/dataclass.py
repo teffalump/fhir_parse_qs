@@ -13,7 +13,7 @@ class Search:
     A FHIR search query:
 
     resource is string of the FHIR resource (i.e., endpoint)
-    query_string is string of the query string
+    query_string is string of the REST query string
     mapping is dict of {search_param: type} that overrides default (optional)
 
     """
@@ -110,6 +110,7 @@ class Search:
                 mod = None #not a true modifier
             else:
                 par, chains = self.getChain(par)
+                target_ep = None
 
             # If parameter not supported, ignore and add to errors
             try:
@@ -129,11 +130,12 @@ class Search:
                 if target_ep:
                     if target_ep in self.all_references[self.resource][par]:
                         start = chains.pop(0)
-                        chain_tree = self.getChainTree(start, [target_ep], chains)
+                        chain_tree = [FHIRChain(endpoint=self.resource, target=par, ttype='reference')]
+                        chain_tree.extend(self.getChainTree(start, [target_ep], chains))
                     else:
                         self.errors.append('\'{}\' is not valid reference endpoint for <parameter> \'{}\''.format(target_ep, par))
                 else:
-                    chain_tree = self.getChainTree(par, [self.resource], chains)[1:] #ignore first parameter, since we already know it
+                    chain_tree = self.getChainTree(par, [self.resource], chains)
             else:
                 chain_tree = None
 

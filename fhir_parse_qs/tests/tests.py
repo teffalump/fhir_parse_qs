@@ -60,9 +60,9 @@ class TestQS(unittest.TestCase):
     def test_chain(self):
         s = Search('Observation', 'subject:Patient.name=peter')
         assert not s['subject'].modifier
-        assert s['subject'].chain[0].ttype == 'string'
-        assert s['subject'].chain[0].target == 'name'
-        assert s['subject'].chain[0].endpoint == 'Patient'
+        assert s['subject'].chain[1].ttype == 'string'
+        assert s['subject'].chain[1].target == 'name'
+        assert s['subject'].chain[1].endpoint == 'Patient'
         assert s['subject'].value == 'peter'
         assert s['subject'].parameter == 'subject'
         try:
