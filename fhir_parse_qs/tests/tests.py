@@ -52,6 +52,11 @@ class TestQS(unittest.TestCase):
         assert isinstance(s['date'][1].value, datetime)
         assert s['date'][1].value < n
 
+        # quantity
+        s = Search('Observation', 'value-quantity=gt234|http://loinc.org|mg')
+        assert s['value-quantity'].value == 234
+        assert s['value-quantity'].prefix == 'gt'
+
     def test_chain(self):
         s = Search('Observation', 'subject:Patient.name=peter')
         assert not s['subject'].modifier
@@ -60,6 +65,12 @@ class TestQS(unittest.TestCase):
         assert s['subject'].chain[0].endpoint == 'Patient'
         assert s['subject'].value == 'peter'
         assert s['subject'].parameter == 'subject'
+        try:
+            s = Search('Observation', 'subject:Patient.organization=peter')
+        except TypeError:
+            pass
+        else:
+            assert False
 
     #def test_chain_plus(self):
         #s = Search('Observation', 'code=http://loinc.org|1234-5&subject.name=peter')

@@ -6,6 +6,7 @@ __all__=['Search']
 
 FHIRSearchPair = namedtuple("FHIRSearchPair", 'modifier prefix parameter value type_ chain')
 FHIRChain = namedtuple("FHIRChain", 'endpoint target ttype')
+#quantity = namedtuple("quantity", 'value system code')
 
 class Search:
     """
@@ -17,26 +18,27 @@ class Search:
 
     """
 
+    # Static elements
+    allowed_basic_mods = ['exact', 'missing', 'exists', 'contains', 'text', 'in', 'above', 'below', 'not-in']
+    allowed_prefixes = ['eq', 'ne', 'gt', 'lt', 'ge', 'le', 'sa', 'eb', 'ap']
+    all_types = search_types
+    all_references = search_references
+    search_cast = {
+            'number': float,
+            'string': str,
+            'reference': str,
+            'token': str,
+            'date': parse,
+            'composite': str,
+            'quantity': float,
+            'uri': str
+            }
+
     def __init__(self, resource, query_string, mapping=None):
 
-        self.allowed_basic_mods = ['exact', 'missing', 'exists', 'contains', 'text', 'in', 'above', 'below', 'not-in']
-        self.allowed_prefixes = ['eq', 'ne', 'gt', 'lt', 'ge', 'le', 'sa', 'eb', 'ap']
         self.resource = resource
-        self.all_types = search_types
-        self.all_references = search_references
         self.qs = query_string
         self.errors = []
-        self.search_cast = {
-                'number': float,
-                'string': str,
-                'reference': str,
-                'token': str,
-                'date': parse,
-                'composite': str,
-                'quantity': str,
-                'uri': str
-                }
-
         if not mapping:
             try:
                 self.search_mapping = self.all_types[resource]
@@ -52,6 +54,8 @@ class Search:
     def __getitem__(self, key):
         """
         Retrieves FHIRSearch by parameter or index
+
+        Returns object if only 1 match, otherwise list
         """
 
         if self.parsed_qs is None: raise TypeError('Not indexable')
@@ -73,7 +77,7 @@ class Search:
             return found
 
     def __repr__(self):
-        return '<FHIR search on {}, {} parameter(s)>'.format(self.resource, len(self.parsed_qs))
+        return '<FHIR search on {}, {} parameter(s), {} errors>'.format(self.resource, len(self.parsed_qs), len(self.errors))
 
     def __len__(self):
         return len(self.parsed_qs)
@@ -99,9 +103,9 @@ class Search:
             #Get modifier
             par, mod = self.getModifier(param)
 
-            # Chain parsing
+            # Chain parsing with modifier as resource
+            # e.g., :Patient.name
             if mod and self.getChain(mod)[1]:
-                # e.g., :Patient.name
                 target_ep, chains = self.getChain(mod)
                 mod = None #not a true modifier
             else:
@@ -111,12 +115,12 @@ class Search:
             try:
                 type_ = self.search_mapping[par]
             except:
-                self.errors.append('Parameter <{}> not found in mapping; Ignoring'.format(par))
+                self.errors.append('<parameter> \'{}\' not found in mapping; Ignoring'.format(par))
                 continue
 
             # Does type allow chaining
             if chains and not self.allowsChain(type_):
-                self.errors.append('Parameter <{}> does not allow chaining; Ignoring'.format(par))
+                self.errors.append('<parameter> \'{}\' does not allow chaining; Ignoring'.format(par))
                 continue
 
             # Chains
@@ -125,11 +129,11 @@ class Search:
                 if target_ep:
                     if target_ep in self.all_references[self.resource][par]:
                         start = chains.pop(0)
-                        chain_tree = self.getChainTree([target_ep], start, chains)
+                        chain_tree = self.getChainTree(start, [target_ep], chains)
                     else:
-                        self.errors.append('{} is not valid reference for {} parameter'.format(target_ep, par))
+                        self.errors.append('\'{}\' is not valid reference endpoint for <parameter> \'{}\''.format(target_ep, par))
                 else:
-                    chain_tree = self.getChainTree([self.resource], par, chains)[1:] #ignore first parameter
+                    chain_tree = self.getChainTree(par, [self.resource], chains)[1:] #ignore first parameter, since we already know it
             else:
                 chain_tree = None
 
@@ -139,14 +143,14 @@ class Search:
 
             if mod:
                 if not self.validModifier(mod, type_):
-                    raise TypeError('The {} search parameter cannot have modifier {}'.format(par, mod))
+                    raise TypeError('<parameter> \'{}\' cannot have modifier \'{}\''.format(par, mod))
 
             #Prefix
             pre, v = self.getPrefix(value, type_)
 
             #Cast the value
             value = self.getValidType(type_, v)
-            if value is False: raise ValueError('Cannot cast {} to type {}'.format(v, type_))
+            if value is False: raise ValueError('Cannot cast \'{}\' to type \'{}\''.format(v, type_))
 
             pairs.append(FHIRSearchPair(modifier=mod, prefix=pre, value=value, parameter=par, type_=type_, chain=chain_tree))
 
@@ -154,9 +158,13 @@ class Search:
 
     def getValidType(self, type_, value):
         """
-        Returns parsed value if correct type or False
+        Returns parsed value in correct type or False
+
+        TODO Full quantity support [parameter]=[prefix][number]|[system]|[code]
         """
         try:
+            if type_ == 'quantity':
+                value = value.split('|')[0] # Ignore system and code
             return self.search_cast[type_](value)
         except:
             return False
@@ -214,26 +222,44 @@ class Search:
         base, *chain = parameter.split('.')
         return base, chain or None
 
-    def getChainTree(self, endpoint, parameter, chains):
+    def getChainTree(self, parameter, endpoints, chains):
         """
         Get the chain tree
 
-        Endpoint: List of possible endpoints
         Parameter: Current parameter
+        Endpoints: List of endpoints parameter points to
         Chains: Rest of chains
+
+        For example:
+            <parameter> 'subject' points to <endpoints> ['Patient'] with no subsequent <chains> []
+
+        Returns list of FHIRChain(...)
 
         #TODO Multi-endpoints
         """
-        if len(endpoint) != 1:
-            raise ValueError('Ambiguous chain')
-        endpoint = endpoint[0]
-        ttype = self.all_types[endpoint][parameter]
-        if not chains: return [FHIRChain(endpoint=endpoint, target=parameter, ttype=ttype)]
+
+        if len(endpoints) > 1:
+            raise ValueError('Multiple possible endpoints; currently unsupported')
+        elif len(endpoints) == 0:
+            raise ValueError('No endpoints given')
         else:
+            endpoint = endpoints[0]
+
+        # The target parameter type
+        ttype = self.all_types[endpoint][parameter]
+
+        if not chains:
+            if ttype == 'reference': raise TypeError('This chain ends in a <reference> type parameter')
+            return [FHIRChain(endpoint=endpoint, target=parameter, ttype=ttype)]
+        else:
+            # Update the next parameter, endpoints, and chains, then recursively call self
             current = [FHIRChain(endpoint=endpoint, target=parameter, ttype=ttype)]
             new_target = chains.pop(0)
-            new_endpoints = self.all_references[endpoint][parameter]
-            return current + self.getChainTree(new_endpoints, new_target, chains)
+            try:
+                new_endpoints = self.all_references[endpoint][parameter]
+            except:
+                raise TypeError('{} is not a <reference> type'.format(parameter))
+            return current + self.getChainTree(new_target, new_endpoints, chains)
 
 
     @property
@@ -274,7 +300,7 @@ class Search:
     @property
     def unparsed(self):
         """
-        Returns the raw query string
+        Returns the original, raw query string
         """
         return self.qs
 
