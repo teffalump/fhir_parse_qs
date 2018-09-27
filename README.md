@@ -9,6 +9,11 @@ Generally only have included relevant Resources with maturity greater than 2. So
 #### Usage
 
     from fhir_parse_qs import Search
+
+    # supported endpoints
+    Search.supported --> [...]
+
+    # simple use
     search = Search('Patient', 'name=bob') # Search(<endpoint>, <query_string>)
 
     # endpoint

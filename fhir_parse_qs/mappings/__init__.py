@@ -9,8 +9,14 @@ from .appointment_response import mapping as apptr
 from .appointment_response import references as r_apptr
 from .condition import mapping as condition
 from .condition import references as r_condition
+from .care_plan import mapping as cp
+from .care_plan import references as r_cp
+from .care_team import mapping as ct
+from .care_team import references as r_ct
 from .diagnostic_report import mapping as dr
 from .diagnostic_report import references as r_dr
+from .document_reference import mapping as docr
+from .document_reference import references as r_docr
 from .encounter import mapping as enc
 from .encounter import references as r_enc
 from .family_member_history import mapping as fm
@@ -59,7 +65,10 @@ search_types = {
         'Appointment': appt,
         'AppointmentResponse': apptr,
         'Condition': condition,
+        'CarePlan': cp,
+        'CareTeam': ct,
         'DiagnosticReport': dr,
+        'DocumentReference': docr,
         'Encounter': enc,
         'FamilyMemberHistory': fm,
         'ImagingStudy': img,
@@ -87,7 +96,10 @@ search_references = {
         'Appointment': r_appt,
         'AppointmentResponse': r_apptr,
         'Condition': r_condition,
+        'CarePlan': r_cp,
+        'CareTeam': r_ct,
         'DiagnosticReport': r_dr,
+        'DocumentReference': r_docr,
         'Encounter': r_enc,
         'FamilyMemberHistory': r_fm,
         'ImagingStudy': r_img,

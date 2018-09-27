@@ -9,12 +9,21 @@ FHIRChain = namedtuple("FHIRChain", 'endpoint target ttype')
 #quantity = namedtuple("quantity", 'value system code')
 
 class Search:
-    """
-    A FHIR search query:
+    """A FHIR search query
 
-    resource is string of the FHIR resource (i.e., endpoint)
-    query_string is string of the REST query string
-    mapping is dict of {search_param: type} that overrides default (optional)
+    :param resource: The FHIR resource queried
+    :type resource: str
+    :param query_string: The query string
+    :type query_string: str
+    :param mapping: overrides default mapping (optional)
+    :type mapping: dict
+
+    :Example:
+
+    >>> import fhir_parse_qs
+    >>> query = fhir_parse_qs.Search('Patient', 'name=peter')
+    >>> query.endpoint
+    'Patient'
 
     """
 
@@ -33,6 +42,7 @@ class Search:
             'quantity': float,
             'uri': str
             }
+    supported = [k for k in search_types.keys() if k not in ('ctrl_parameters', 'common_parameters')]
 
     def __init__(self, resource, query_string, mapping=None):
 
@@ -126,7 +136,7 @@ class Search:
 
             # Chains
             if chains:
-                # If there is specific endpoint
+                # If there is specified endpoint
                 if target_ep:
                     if target_ep in self.all_references[self.resource][par]:
                         start = chains.pop(0)
@@ -134,6 +144,7 @@ class Search:
                         chain_tree.extend(self.getChainTree(start, [target_ep], chains))
                     else:
                         self.errors.append('\'{}\' is not valid reference endpoint for <parameter> \'{}\''.format(target_ep, par))
+                        continue
                 else:
                     chain_tree = self.getChainTree(par, [self.resource], chains)
             else:
@@ -181,7 +192,7 @@ class Search:
         if type_ in ('number','date', 'quantity'):
             for pf in self.allowed_prefixes:
                 if value.startswith(pf):
-                    return value[:2], value[2:]
+                    return value[:len(pf)], value[len(pf):]
         return None, value
 
     def validModifier(self, modifier, type_):

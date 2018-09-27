@@ -11,6 +11,19 @@ qss = [
 
 class TestQS(unittest.TestCase):
 
+    def test_not_supported(self):
+        try:
+            s = Search('Blark', 'eueu=aoeuaoeu')
+            assert False
+        except:
+            assert True
+
+    def test_unknown(self):
+        s = Search('Patient', 'blank=female')
+        assert len(s.error) == 1
+        assert len(s) == 0
+
+
     def test_basic(self):
         s = Search('Patient', 'gender=female')
         assert len(s) == 1
