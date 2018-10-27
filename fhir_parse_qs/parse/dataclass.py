@@ -25,6 +25,10 @@ class Search:
     >>> query.endpoint
     'Patient'
 
+    .. note:: This class uses namedtuples
+        - FHIRSearchPair: modifier, prefix, parameter, value, type_, chain
+        - FHIRChain: endpoint, target, ttype
+
     """
 
     # Static elements
@@ -65,7 +69,10 @@ class Search:
         """
         Retrieves FHIRSearch by parameter or index
 
-        Returns object if only 1 match, otherwise list
+        :param key: key
+        :type key: str or int
+        :rtype: list of FHIRSearchPair or FHIRSearchPair
+
         """
 
         if self.parsed_qs is None: raise TypeError('Not indexable')
@@ -101,6 +108,14 @@ class Search:
         return parse_qsl(qs)
 
     def parse_qs(self, qs):
+        """Parse the query string
+
+        :param qs: query string
+        :type qs: str
+        :return: returns the parsed query string
+        :rtype: list of FHIRSearchPair
+        """
+
         naive_pairs = self.naive_parse_qs(qs)
         pairs = []
         for param, value in naive_pairs:
@@ -174,7 +189,15 @@ class Search:
         """
         Returns parsed value in correct type or False
 
-        TODO Full quantity support [parameter]=[prefix][number]|[system]|[code]
+        :param type_: the parameter type
+        :type type_: str
+        :param value: the parameter value
+        :type value: str
+        :return: returns the cast value, or False if failed
+        :rtype: variable
+
+
+        .. TODO:: Full quantity support [parameter]=[prefix][number]|[system]|[code]
         """
         try:
             if type_ == 'quantity':
@@ -200,8 +223,8 @@ class Search:
         All types allow certain modifiers, consequently need type of parameter, too, for further validation
 
         Returns true if type allows modifier, else false
+        .. TODO:: Add reference 'type' modifier logic
         """
-        # TODO Add reference 'type' modifier logic
         if type_ == 'reference': return True # e.g., :Patient.name, :Observation.id
         if modifier in ('missing', 'exists'): return True
         if modifier in ('exact', 'contains') and type_ == 'string': return True
@@ -249,7 +272,7 @@ class Search:
 
         Returns list of FHIRChain(...)
 
-        #TODO Multi-endpoints
+        .. TODO:: Multi-endpoints
         """
 
         if len(endpoints) > 1:
@@ -324,6 +347,13 @@ class Search:
         Returns the list of search queries
         """
         return self.parsed_qs
+
+    @property
+    def control(self):
+        """
+        Returns control parameters
+        """
+        return [x for x in self.parsed_qs if x.parameter in self.all_types['ctrl_parameters']]
 
     @property
     def error(self):

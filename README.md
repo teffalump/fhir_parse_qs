@@ -2,7 +2,7 @@ A library to parse FHIR query strings.
 
 - Validates type and returns correct object
 - Built-in search parameters from FHIR standard
-- Parses modifiers and prefixes
+- Supports modifiers, prefixes, and chains
 
 Generally only have included relevant Resources with maturity greater than 2. Some exceptions.
 
@@ -31,8 +31,8 @@ Generally only have included relevant Resources with maturity greater than 2. So
     search[0].type_ --> 'string'
     search[0].chain --> None
 
-    # act like dict with parameter as key (list if non-unique parameter)
-    search['name'] --> FHIRSearch(...)
+    # act like dict with parameter as key
+    search['name'] --> FHIRSearch(...) #list if non-unique parameter
 
     # can iterate over the parameter/value pairs
     for x in search:
@@ -53,3 +53,6 @@ Generally only have included relevant Resources with maturity greater than 2. So
     search[0].chain[1].endpoint = 'Patient'
     search[0].chain[1].target = 'name'
     search[0].chain[1].ttype = 'string'
+
+    # return control parameters (eg, _sort, _count, etc)
+    search.control --> [...]

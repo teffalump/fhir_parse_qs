@@ -93,6 +93,13 @@ class TestQS(unittest.TestCase):
         #assert s['subject'].chain[0].ttype == 'string'
         #assert s['subject'].chain[0].target == 'name'
 
+    def test_control(self):
+        s = Search('Procedure', 'date=le2011-12-31&_count=34')
+        assert len(s.control) == 1
+        assert s.control[0].parameter == '_count'
+        assert s.control[0].value == 34
+
+
     def test_mod_plus(self):
         s = Search('AllergyIntolerance', 'clinical-status=active&clinical-status:exists=false')
         assert len(s['clinical-status']) == 2
