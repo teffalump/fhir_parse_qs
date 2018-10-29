@@ -70,6 +70,10 @@ class TestQS(unittest.TestCase):
         assert s['value-quantity'].value == 234
         assert s['value-quantity'].prefix == 'gt'
 
+    def test_token(self):
+        s = Search('Condition', 'code=http://acme.org/conditions/codes|ha125')
+        assert s['code'].value == 'ha125'
+
     def test_chain(self):
         s = Search('Observation', 'subject:Patient.name=peter')
         assert not s['name'].modifier

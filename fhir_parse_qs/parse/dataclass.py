@@ -198,10 +198,13 @@ class Search:
 
 
         .. TODO:: Full quantity support [parameter]=[prefix][number]|[system]|[code]
+        .. TODO:: Full token support [parameter]=[system]|[code] (system optional)
         """
         try:
             if type_ == 'quantity':
                 value = value.split('|')[0] # Ignore system and code
+            if type_ == 'token':
+                value = value.split('|')[-1] # Ignore system
             return self.search_cast[type_](value)
         except:
             return False
