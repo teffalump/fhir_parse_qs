@@ -1,0 +1,40 @@
+__all__=['careplan_mapping', 'careplan_references']
+
+careplan_mapping = {
+    'date': 'date',
+    'identifier': 'token',
+    'patient': 'reference',
+    'activity-code': 'token',
+    'activity-date': 'date',
+    'activity-reference': 'reference',
+    'based-on': 'reference',
+    'care-team': 'reference',
+    'category': 'token',
+    'condition': 'reference',
+    'context': 'reference',
+    'definition': 'reference',
+    'encounter': 'reference',
+    'goal': 'reference',
+    'intent': 'token',
+    'part-of': 'reference',
+    'performer': 'reference',
+    'replaces': 'reference',
+    'status': 'token',
+    'subject': 'reference',
+    }
+
+careplan_references = {
+    'patient': [ 'Patient' ],
+    'activity-reference': [ 'Appointment', 'ReferralRequest', 'MedicationRequest', 'Task', 'NutritionOrder', 'RequestGroup', 'VisionPrescription', 'ProcedureRequest', 'DeviceRequest', 'CommunicationRequest' ],
+    'based-on': [ 'CarePlan' ],
+    'care-team': [ 'CareTeam' ],
+    'condition': [ 'Condition' ],
+    'context': [ 'EpisodeOfCare', 'Encounter' ],
+    'definition': [ 'Questionnaire', 'PlanDefinition' ],
+    'encounter': [ 'Encounter' ],
+    'goal': [ 'Goal' ],
+    'part-of': [ 'CarePlan' ],
+    'performer': [ 'Practitioner', 'Organization', 'CareTeam', 'Patient', 'RelatedPerson' ],
+    'replaces': [ 'CarePlan' ],
+    'subject': [ 'Group', 'Patient' ],
+    }

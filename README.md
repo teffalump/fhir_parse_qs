@@ -4,8 +4,6 @@ A library to parse FHIR query strings.
 - Built-in search parameters from FHIR standard
 - Supports modifiers, prefixes, and chains
 
-Generally only have included relevant Resources with maturity greater than 2. Some exceptions.
-
 #### Usage
 
     from fhir_parse_qs import Search

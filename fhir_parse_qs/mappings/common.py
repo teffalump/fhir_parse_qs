@@ -1,19 +1,15 @@
-common_parameters = {'_id': 'token',
-                        '_lastUpdated': 'date',
-                        '_tag': 'token',
-                        '_profile': 'uri',
-                        '_security': 'token',
-                        '_text': 'string',
-                        '_content': 'string',
-                        '_list': 'string',
-                        '_query': 'string',
-                        }
+__all__=['common_mapping', 'common_references']
 
-control_parameters = {'_sort': 'string',
-                        '_count': 'number',
-                        '_include': 'string',
-                        '_revinclude': 'string',
-                        '_summary': 'string',
-                        '_containded': 'string',
-                        '_containedType': 'string',
-                        }
+common_mapping = {
+    '_text': 'string',
+    '_content': 'string',
+    '_id': 'token',
+    '_lastUpdated': 'date',
+    '_profile': 'uri',
+    '_query': 'token',
+    '_security': 'token',
+    '_tag': 'token',
+    }
+
+common_references = {
+    }

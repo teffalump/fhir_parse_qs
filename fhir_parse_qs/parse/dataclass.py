@@ -46,7 +46,7 @@ class Search:
             'quantity': float,
             'uri': str
             }
-    supported = [k for k in search_types.keys() if k not in ('ctrl_parameters', 'common_parameters')]
+    supported = [k for k in search_types.keys() if k not in ('control', 'common')]
 
     def __init__(self, resource, query_string, mapping=None):
 
@@ -56,8 +56,8 @@ class Search:
         if not mapping:
             try:
                 self.search_mapping = self.all_types[resource]
-                self.search_mapping.update(self.all_types['ctrl_parameters']) #update with common
-                self.search_mapping.update(self.all_types['common_parameters']) #update with common
+                self.search_mapping.update(self.all_types['control'])
+                self.search_mapping.update(self.all_types['common'])
             except:
                 raise ValueError('{} is not a supported endpoint; Please provide mapping'.format(resource))
         else:
@@ -356,7 +356,7 @@ class Search:
         """
         Returns control parameters
         """
-        return [x for x in self.parsed_qs if x.parameter in self.all_types['ctrl_parameters']]
+        return [x for x in self.parsed_qs if x.parameter in self.all_types['control']]
 
     @property
     def error(self):

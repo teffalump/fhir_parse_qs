@@ -6,7 +6,7 @@ from pendulum import now
 qss = [
         ('Observation', 'filter=name eq http://loinc.org|1234-5 and subject.name co "peter"'),
         ('DiagnosticReport', 'result.code-value-quantity=http://loinc.org|2823-3$gt5.4|http://unitsofmeasure.org|mmol/L'),
-        ('Patient', '_has:Observation:patient:_has:AuditEvent:entity:user=MyUserId'),
+        #('Patient', '_has:Observation:patient:_has:AuditEvent:entity:user=MyUserId'),
         ]
 
 class TestQS(unittest.TestCase):
@@ -32,18 +32,18 @@ class TestQS(unittest.TestCase):
         assert not s.prefix
 
     def test_basic_plus(self):
-        s = Search('Patient', '_list=42&gender=female')
+        s = Search('Patient', '_count=42&gender=female')
         assert s.endpoint == 'Patient'
         assert len(s) == 2
-        assert s['_list'].value == '42'
+        assert s['_count'].value == 42
         assert s['gender'].value == 'female'
         assert not s.modifier
 
-    def test_basic_plus2(self):
-        s = Search('AllergyIntolerance', 'patient=42&_list=$current-allergies')
-        assert s.endpoint == 'AllergyIntolerance'
-        assert len(s) == 2
-        assert s['_list'].value == '$current-allergies'
+    #def test_basic_plus2(self):
+        #s = Search('AllergyIntolerance', 'patient=42')
+        #assert s.endpoint == 'AllergyIntolerance'
+        #assert len(s) == 2
+        #assert s['_list'].value == '$current-allergies'
 
     def test_mod(self):
         s = Search('Patient', 'given:contains=eve')
