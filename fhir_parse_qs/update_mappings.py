@@ -1,7 +1,5 @@
-import pickle
-import pprint
 import json
-import urllib.request
+from urllib.request import urlretrieve
 from zipfile import ZipFile
 import os
 
@@ -9,7 +7,7 @@ BASE_URL='http://www.hl7.org/fhir/definitions.json.zip'
 JSON_FILE='search-parameters.json'
 
 def download_specifications(url=BASE_URL):
-    local_file, _ = urllib.request.urlretrieve(url)
+    local_file, _ = urlretrieve(url)
     with ZipFile(local_file) as z:
         z.extract(JSON_FILE)
 
