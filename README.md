@@ -40,17 +40,17 @@ A library to parse FHIR query strings.
     search = Search('Patient', 'random=test')
     search.error --> [...]
 
-    # chains - namedtuple with endpoint, target_parameter, target_type
+    # chains - list of lists
     search = Search('Observation', 'patient.name=peter')
     search[0].parameter --> 'name' # last parameter in chain
     search[0].value --> 'peter'
-    search[0].chain --> [FHIRChain(...), FHIRChain(...)]
-    search[0].chain[0].endpoint = 'Observation'
-    search[0].chain[0].target = 'patient'
-    search[0].chain[0].ttype = 'reference'
-    search[0].chain[1].endpoint = 'Patient'
-    search[0].chain[1].target = 'name'
-    search[0].chain[1].ttype = 'string'
+    search[0].chain --> [[FHIRChain(...), FHIRChain(...)], ...]
+    search[0].chain[0][0].endpoint = 'Observation'
+    search[0].chain[0][0].target = 'patient'
+    search[0].chain[0][0].ttype = 'reference'
+    search[0].chain[0][1].endpoint = 'Patient'
+    search[0].chain[0][1].target = 'name'
+    search[0].chain[0][1].ttype = 'string'
 
     # return control parameters (eg, _sort, _count, etc)
     search.control --> [...]

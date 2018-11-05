@@ -154,21 +154,20 @@ class Search:
                 # If there is specified endpoint
                 if target_ep:
                     if target_ep in self.all_references[self.resource][par]:
-                        start = chains.pop(0)
-                        chain_tree = [FHIRChain(endpoint=self.resource, target=par, ttype='reference')]
-                        chain_tree.extend(self.getChainTree(start, [target_ep], chains))
+                        chain_tree = [x for x in self.getValidChains(self.resource, [par]+chains) \
+                                            if x[1].endpoint == target_ep]
                     else:
                         self.errors.append('\'{}\' is not valid reference endpoint for <parameter> \'{}\''.format(target_ep, par))
                         continue
                 else:
-                    chain_tree = self.getChainTree(par, [self.resource], chains)
+                    chain_tree = self.getValidChains(self.resource, [par]+chains)
             else:
                 chain_tree = None
 
             #Chain overrules the original type and parameter
             if chain_tree:
-                type_ = chain_tree[-1].ttype
-                par = chain_tree[-1].target
+                type_ = chain_tree[0][-1].ttype
+                par = chain_tree[0][-1].target
 
             if mod:
                 if not self.validModifier(mod, type_):
@@ -193,7 +192,7 @@ class Search:
         :type type_: str
         :param value: the parameter value
         :type value: str
-        :return: returns the cast value, or False if failed
+        :return: returns the cast value or False if failed
         :rtype: variable
 
 
@@ -247,6 +246,15 @@ class Search:
             return base, mod[0] #Should only be 1 (?)
         return base, None
 
+    def getValidChains(self, resource, chains, saved=[]):
+        """
+        Gets the chains
+        """
+
+        temp = [x for x in self.getChainTree(saved, resource, chains) if x]
+        if not temp: raise TypeError('No valid chains')
+        return temp
+
     def allowsChain(self, type_):
         """
         Can only chain references
@@ -255,52 +263,36 @@ class Search:
 
     def getChain(self, parameter):
         """
-        Parse chains - split on '.'
+        Parse chains by splitting on '.'
 
         Returns (base_parameter, [chain(s)]) or (parameter, None)
         """
         base, *chain = parameter.split('.')
         return base, chain or None
 
-    def getChainTree(self, parameter, endpoints, chains):
+    def getChainTree(self, saved=[], resource=None, chains=[]):
         """
         Get the chain tree
 
-        Parameter: Current parameter
-        Endpoints: List of endpoints parameter points to
-        Chains: Rest of chains
+        Returns the resource paths
 
-        For example:
-            <parameter> 'subject' points to <endpoints> ['Patient'] with no subsequent <chains> []
-
-        Returns list of FHIRChain(...)
-
-        .. TODO:: Multi-endpoints
         """
-
-        if len(endpoints) > 1:
-            raise ValueError('Multiple possible endpoints; currently unsupported')
-        elif len(endpoints) == 0:
-            raise ValueError('No endpoints given')
-        else:
-            endpoint = endpoints[0]
-
-        # The target parameter type
-        ttype = self.all_types[endpoint][parameter]
+        curr, chains = chains[0], chains[1:]
 
         if not chains:
-            if ttype == 'reference': raise TypeError('This chain ends in a <reference> type parameter')
-            return [FHIRChain(endpoint=endpoint, target=parameter, ttype=ttype)]
-        else:
-            # Update the next parameter, endpoints, and chains, then recursively call self
-            current = [FHIRChain(endpoint=endpoint, target=parameter, ttype=ttype)]
-            new_target = chains.pop(0)
             try:
-                new_endpoints = self.all_references[endpoint][parameter]
+                d = self.all_types[resource][curr]
+                if d == 'reference': return [] #invalid if ends on reference
+                else:
+                    return saved+[FHIRChain(endpoint=resource, target=curr, ttype=d)]
             except:
-                raise TypeError('{} is not a <reference> type'.format(parameter))
-            return current + self.getChainTree(new_target, new_endpoints, chains)
-
+                return [] #invalid if not valid parameter
+        else:
+            try:
+                rs = self.all_references[resource][curr]
+            except:
+                return [] #invalid if not valid reference
+            return [self.getChainTree(saved+[FHIRChain(endpoint=resource, target=curr, ttype='reference')], r, chains) for r in rs]
 
     @property
     def modifier(self):
