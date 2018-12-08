@@ -5,11 +5,21 @@ import os
 
 BASE_URL='http://www.hl7.org/fhir/definitions.json.zip'
 JSON_FILE='search-parameters.json'
+TARGET_DIR='mappings/'
+
+def setup():
+    try:
+        os.mkdir(TARGET_DIR)
+        print('Created target directory.')
+    except:
+        print('Target directory already exists, skipping creation.')
+
 
 def download_specifications(url=BASE_URL):
     local_file, _ = urlretrieve(url)
     with ZipFile(local_file) as z:
         z.extract(JSON_FILE)
+    print('Downloaded specifications.')
 
 def get_imported_json(target=JSON_FILE):
     with open(target) as json_file:
@@ -54,8 +64,9 @@ def organize(entries):
 
 def write_mappings(data):
     for key,value in data.items():
+        filename = os.path.join(TARGET_DIR, key.lower()+'.py')
         #write each resource
-        with open(key.lower()+'.py', 'w') as f:
+        with open(filename, 'w') as f:
             f.write('__all__=[\'{}_mapping\', \'{}_references\']\n\n'.format(key.lower(), key.lower()))
             f.write('{}_mapping = {{\n'.format(key.lower()))
             for p in value:
@@ -66,9 +77,11 @@ def write_mappings(data):
                 if p['targets']:
                     f.write('    \'{}\': [ {} ],\n'.format(p['name'], ', '.join(["'" + x + "'" for x in p['targets']])))
             f.write('    }\n')
+    print('Generated mappings.')
 
 def write_init(data):
-    with open('__init__.py', 'w') as f:
+    filename = os.path.join(TARGET_DIR, '__init__.py')
+    with open(filename, 'w') as f:
         f.write('__all__=[\'search_types\', \'search_references\']\n\n')
         for resource in sorted(data):
             f.write('from .{} import {}, {}\n'.format(resource.lower(), resource.lower()+'_mapping', resource.lower()+'_references'))
@@ -81,11 +94,13 @@ def write_init(data):
         for resource in sorted(data):
             f.write('    \'{}\': {},\n'.format(resource, resource.lower()+'_references'))
         f.write('    }')
+    print('Generated init file.')
 
 def cleanup():
     os.remove(JSON_FILE)
 
 if __name__=='__main__':
+    setup()
     download_specifications()
     d = organize(get_data(get_imported_json()))
     write_mappings(d)

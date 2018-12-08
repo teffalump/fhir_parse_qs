@@ -32,15 +32,15 @@ A library to parse FHIR query strings.
     # act like dict with parameter as key
     search['name'] --> FHIRSearch(...) #list if non-unique parameter
 
-    # can iterate over the parameter/value pairs
+    # iterate over the parameter/value pairs
     for x in search:
          print(x) --> FHIRSearch(...)
 
-    # unrecognized parameter, ignore and log it
+    # ignores and logs unrecognized parameters
     search = Search('Patient', 'random=test')
     search.error --> [...]
 
-    # chains - list of lists
+    # supports chains (list of lists)
     search = Search('Observation', 'patient.name=peter')
     search[0].parameter --> 'name' # last parameter in chain
     search[0].value --> 'peter'

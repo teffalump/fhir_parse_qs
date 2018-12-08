@@ -6,17 +6,9 @@ __all__=['Search']
 
 FHIRSearchPair = namedtuple("FHIRSearchPair", 'modifier prefix parameter value type_ chain')
 FHIRChain = namedtuple("FHIRChain", 'endpoint target ttype')
-#quantity = namedtuple("quantity", 'value system code')
 
 class Search:
     """A FHIR search query
-
-    :param resource: The FHIR resource queried
-    :type resource: str
-    :param query_string: The query string
-    :type query_string: str
-    :param mapping: overrides default mapping (optional)
-    :type mapping: dict
 
     :Example:
 
@@ -28,7 +20,6 @@ class Search:
     .. note:: This class uses namedtuples
         - FHIRSearchPair: modifier, prefix, parameter, value, type_, chain
         - FHIRChain: endpoint, target, ttype
-
     """
 
     # Static elements
@@ -49,6 +40,16 @@ class Search:
     supported = [k for k in search_types.keys() if k not in ('control', 'common')]
 
     def __init__(self, resource, query_string, mapping=None):
+        """
+        Instantiates class with target endpoint and query string
+
+        :param resource: target FHIR resource
+        :type resource: str
+        :param query_string: query string
+        :type query_string: str
+        :param mapping: mapping than overrides default (optional)
+        :type mapping: dict(str, str)
+        """
 
         self.resource = resource
         self.qs = query_string
@@ -67,11 +68,11 @@ class Search:
 
     def __getitem__(self, key):
         """
-        Retrieves FHIRSearch by parameter or index
+        Retrieves FHIRSearchPain by parameter or index
 
         :param key: key
         :type key: str or int
-        :rtype: list of FHIRSearchPair or FHIRSearchPair
+        :rtype: list(FHIRSearchPair) or list(FHIRSearchPair)
 
         """
 
@@ -104,6 +105,8 @@ class Search:
 
     @staticmethod
     def naive_parse_qs(qs):
+        """Wrapper for urllib.parse.parse_qsl"""
+
         from urllib.parse import parse_qsl
         return parse_qsl(qs)
 
@@ -112,8 +115,8 @@ class Search:
 
         :param qs: query string
         :type qs: str
-        :return: returns the parsed query string
-        :rtype: list of FHIRSearchPair
+        :return: parsed query string
+        :rtype: list(FHIRSearchPair)
         """
 
         naive_pairs = self.naive_parse_qs(qs)
@@ -188,11 +191,11 @@ class Search:
         """
         Returns parsed value in correct type or False
 
-        :param type_: the parameter type
+        :param type_: parameter type
         :type type_: str
-        :param value: the parameter value
+        :param value: parameter value
         :type value: str
-        :return: returns the cast value or False if failed
+        :return: cast value or False if failed
         :rtype: variable
 
 
@@ -210,10 +213,18 @@ class Search:
 
     def getPrefix(self, value, type_):
         """
-        Returns (prefix, base_value) or (None, base_value)
+        Returns valid prefixes
 
-        Only number, date, and quantity allow prefixes
+        :param value: unparsed string
+        :type value: str
+        :param type_: parameter type
+        :type type_: str
+        :return: (prefix, base_value) or (None, base_value)
+        :rtype: tuple(str, str) or tuple(None, str)
+
+        .. NOTE:: Only number, date, and quantity allow prefixes
         """
+
         if type_ in ('number','date', 'quantity'):
             for pf in self.allowed_prefixes:
                 if value.startswith(pf):
@@ -222,9 +233,15 @@ class Search:
 
     def validModifier(self, modifier, type_):
         """
-        All types allow certain modifiers, consequently need type of parameter, too, for further validation
+        Validate modifier
 
-        Returns true if type allows modifier, else false
+        :param modifier: modifier to check
+        :type modifier: str
+        :param type_: parameter type
+        :type type_: str
+        :return: True or False
+        :rtype: True or False
+
         .. TODO:: Add reference 'type' modifier logic
         """
         if type_ == 'reference': return True # e.g., :Patient.name, :Observation.id
@@ -236,11 +253,14 @@ class Search:
 
     def getModifier(self, parameter):
         """
-        Splits on ':'
+        Split on ':' to get any modifiers
 
-        Returns (base_parameter, modifier) or (parameter, None)
-
+        :param parameter: target string
+        :type parameter: str
+        :return: (base_parameter, modifier) or (parameter, None)
+        :rtype: tuple(str, str) or tuple(str, None)
         """
+
         base, *mod = parameter.split(':')
         if mod:
             return base, mod[0] #Should only be 1 (?)
@@ -248,7 +268,14 @@ class Search:
 
     def getValidChains(self, resource, chains, saved=[]):
         """
-        Gets the chains
+        Wrapper for getChainTree, returning non-empty paths
+
+        :param resource: endpoint
+        :type resource: str
+        :param chains: chains to use
+        :type chains: list(str)
+        :return: non-empty, valid paths or exception (if no paths)
+        :rtype: list(list(FHIRChain)) or TypeError
         """
 
         temp = [x for x in self.getChainTree(saved, resource, chains) if x]
@@ -258,6 +285,11 @@ class Search:
     def allowsChain(self, type_):
         """
         Can only chain references
+
+        :param type_: parameter type
+        :type type_: str
+        :return: True or False
+        :rtype: True or False
         """
         return True if type_ == 'reference' else False
 
@@ -265,20 +297,29 @@ class Search:
         """
         Parse chains by splitting on '.'
 
-        Returns (base_parameter, [chain(s)]) or (parameter, None)
+        :param parameter: target parameter
+        :type parameter: str
+        :return: (base_parameter, [chain(s)]) or (parameter, None)
+        :rtype: tuple(str, list(str)) or tuple(str, None)
         """
         base, *chain = parameter.split('.')
         return base, chain or None
 
     def getChainTree(self, saved=[], resource=None, chains=[]):
         """
-        Get the chain tree
+        Recursively generates paths given chains
 
-        Returns the resource paths
-
+        :param saved: previously saved path
+        :type saved: list(FHIRChain)
+        :param resource: current endpoint
+        :type resource: str
+        :param chains: remaining chains
+        :type chains: list(str)
+        :return: resource paths
+        :rtype: list(list(FHIRChain))
         """
-        curr, chains = chains[0], chains[1:]
 
+        curr, chains = chains[0], chains[1:]
         if not chains:
             try:
                 d = self.all_types[resource][curr]
@@ -298,61 +339,97 @@ class Search:
     def modifier(self):
         """
         Returns all modifiers
+
+        :return: modifiers in parameters
+        :rtype: list(str)
         """
+
         return [x.modifier for x in self.parsed_qs if x.modifier is not None]
 
     @property
     def prefix(self):
         """
         Returns all prefixes
+
+        :return: prefixes in values
+        :rtype: list(str)
         """
+
         return [x.prefix for x in self.parsed_qs if x.prefix is not None]
 
     @property
     def value(self):
         """
         Returns all values
+
+        :return: values in query string
+        :rtype: list(str)
         """
+
         return [x.value for x in self.parsed_qs]
 
     @property
     def parameter(self):
         """
         Returns all parameters
+
+        :return: parameters in query string
+        :rtype: list(str)
         """
+
         return [x.parameter for x in self.parsed_qs]
 
     @property
     def endpoint(self):
         """
         Returns the endpoint
+
+        :return: endpoint
+        :rtype: str
         """
+
         return self.resource
 
     @property
     def unparsed(self):
         """
         Returns the original, raw query string
+
+        :return: raw query string
+        :rtype: str
         """
+
         return self.qs
 
     @property
     def parsed(self):
         """
         Returns the list of search queries
+
+        :return: search queries
+        :rtype: list(FHIRSearchPair)
         """
+
         return self.parsed_qs
 
     @property
     def control(self):
         """
         Returns control parameters
+
+        :return: control parameters in query string
+        :rtype: list(str)
         """
+
         return [x for x in self.parsed_qs if x.parameter in self.all_types['control']]
 
     @property
     def error(self):
         """
         Returns non-critical errors during parsing
+
+        :return: errors during parsing
+        :rtype: list(str)
         """
+
         return self.errors
