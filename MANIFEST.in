@@ -1,3 +1,2 @@
 include README.md
-include parse/*.py
-include mappings/*.py
+recursive-include fhir_parse_qs *.py
