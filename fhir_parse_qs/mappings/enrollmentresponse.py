@@ -1,12 +1,12 @@
-__all__=['enrollmentresponse_mapping', 'enrollmentresponse_references']
+__all__ = ["enrollmentresponse_mapping", "enrollmentresponse_references"]
 
 enrollmentresponse_mapping = {
-    'identifier': 'token',
-    'organization': 'reference',
-    'request': 'reference',
-    }
+    "identifier": "token",
+    "organization": "reference",
+    "request": "reference",
+}
 
 enrollmentresponse_references = {
-    'organization': [ 'Organization' ],
-    'request': [ 'EnrollmentRequest' ],
-    }
+    "organization": ["Organization"],
+    "request": ["EnrollmentRequest"],
+}

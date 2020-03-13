@@ -23,7 +23,7 @@ jobs:
     install:
     - pip install black
     script:
-    - black --check beren tests
+    - black --check fhir_parse_qs tests
   - stage: deploy
     deploy:
     - provider: pypi

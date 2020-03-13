@@ -1,13 +1,13 @@
-__all__=['processrequest_mapping', 'processrequest_references']
+__all__ = ["processrequest_mapping", "processrequest_references"]
 
 processrequest_mapping = {
-    'action': 'token',
-    'identifier': 'token',
-    'organization': 'reference',
-    'provider': 'reference',
-    }
+    "action": "token",
+    "identifier": "token",
+    "organization": "reference",
+    "provider": "reference",
+}
 
 processrequest_references = {
-    'organization': [ 'Organization' ],
-    'provider': [ 'Practitioner' ],
-    }
+    "organization": ["Organization"],
+    "provider": ["Practitioner"],
+}

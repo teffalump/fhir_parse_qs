@@ -1,14 +1,14 @@
-__all__=['deviceusestatement_mapping', 'deviceusestatement_references']
+__all__ = ["deviceusestatement_mapping", "deviceusestatement_references"]
 
 deviceusestatement_mapping = {
-    'patient': 'reference',
-    'device': 'reference',
-    'identifier': 'token',
-    'subject': 'reference',
-    }
+    "patient": "reference",
+    "device": "reference",
+    "identifier": "token",
+    "subject": "reference",
+}
 
 deviceusestatement_references = {
-    'patient': [ 'Patient' ],
-    'device': [ 'Device' ],
-    'subject': [ 'Group', 'Patient' ],
-    }
+    "patient": ["Patient"],
+    "device": ["Device"],
+    "subject": ["Group", "Patient"],
+}

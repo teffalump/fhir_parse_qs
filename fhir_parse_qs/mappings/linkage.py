@@ -1,11 +1,11 @@
-__all__=['linkage_mapping', 'linkage_references']
+__all__ = ["linkage_mapping", "linkage_references"]
 
 linkage_mapping = {
-    'author': 'reference',
-    'item': 'reference',
-    'source': 'reference',
-    }
+    "author": "reference",
+    "item": "reference",
+    "source": "reference",
+}
 
 linkage_references = {
-    'author': [ 'Practitioner', 'Organization' ],
-    }
+    "author": ["Practitioner", "Organization"],
+}

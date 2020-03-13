@@ -1,14 +1,14 @@
-__all__=['devicemetric_mapping', 'devicemetric_references']
+__all__ = ["devicemetric_mapping", "devicemetric_references"]
 
 devicemetric_mapping = {
-    'category': 'token',
-    'identifier': 'token',
-    'parent': 'reference',
-    'source': 'reference',
-    'type': 'token',
-    }
+    "category": "token",
+    "identifier": "token",
+    "parent": "reference",
+    "source": "reference",
+    "type": "token",
+}
 
 devicemetric_references = {
-    'parent': [ 'DeviceComponent' ],
-    'source': [ 'Device' ],
-    }
+    "parent": ["DeviceComponent"],
+    "source": ["Device"],
+}

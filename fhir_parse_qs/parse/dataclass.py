@@ -1,11 +1,14 @@
 from collections import namedtuple
 from pendulum import parse
-from fhir_parse_qs.mappings import (search_references, search_types)
+from fhir_parse_qs.mappings import search_references, search_types
 
-__all__=['Search']
+__all__ = ["Search"]
 
-FHIRSearchPair = namedtuple("FHIRSearchPair", 'modifier prefix parameter value type_ chain')
-FHIRChain = namedtuple("FHIRChain", 'endpoint target ttype')
+FHIRSearchPair = namedtuple(
+    "FHIRSearchPair", "modifier prefix parameter value type_ chain"
+)
+FHIRChain = namedtuple("FHIRChain", "endpoint target ttype")
+
 
 class Search:
     """A FHIR search query
@@ -23,21 +26,31 @@ class Search:
     """
 
     # Static elements
-    allowed_basic_mods = ['exact', 'missing', 'exists', 'contains', 'text', 'in', 'above', 'below', 'not-in']
-    allowed_prefixes = ['eq', 'ne', 'gt', 'lt', 'ge', 'le', 'sa', 'eb', 'ap']
+    allowed_basic_mods = [
+        "exact",
+        "missing",
+        "exists",
+        "contains",
+        "text",
+        "in",
+        "above",
+        "below",
+        "not-in",
+    ]
+    allowed_prefixes = ["eq", "ne", "gt", "lt", "ge", "le", "sa", "eb", "ap"]
     all_types = search_types
     all_references = search_references
     search_cast = {
-            'number': float,
-            'string': str,
-            'reference': str,
-            'token': str,
-            'date': parse,
-            'composite': str,
-            'quantity': float,
-            'uri': str
-            }
-    supported = [k for k in search_types.keys() if k not in ('control', 'common')]
+        "number": float,
+        "string": str,
+        "reference": str,
+        "token": str,
+        "date": parse,
+        "composite": str,
+        "quantity": float,
+        "uri": str,
+    }
+    supported = [k for k in search_types.keys() if k not in ("control", "common")]
 
     def __init__(self, resource, query_string, mapping=None):
         """
@@ -57,10 +70,14 @@ class Search:
         if not mapping:
             try:
                 self.search_mapping = self.all_types[resource]
-                self.search_mapping.update(self.all_types['control'])
-                self.search_mapping.update(self.all_types['common'])
+                self.search_mapping.update(self.all_types["control"])
+                self.search_mapping.update(self.all_types["common"])
             except:
-                raise ValueError('{} is not a supported endpoint; Please provide mapping'.format(resource))
+                raise ValueError(
+                    "{} is not a supported endpoint; Please provide mapping".format(
+                        resource
+                    )
+                )
         else:
             self.search_mapping = mapping
 
@@ -76,11 +93,13 @@ class Search:
 
         """
 
-        if self.parsed_qs is None: raise TypeError('Not indexable')
+        if self.parsed_qs is None:
+            raise TypeError("Not indexable")
         found = []
         if isinstance(key, str):
             for item in self.parsed_qs:
-                if item.parameter == key: found.append(item)
+                if item.parameter == key:
+                    found.append(item)
         else:
             try:
                 found.append(self.parsed_qs[key])
@@ -95,7 +114,9 @@ class Search:
             return found
 
     def __repr__(self):
-        return '<FHIR search on {}, {} parameter(s), {} errors>'.format(self.resource, len(self.parsed_qs), len(self.errors))
+        return "<FHIR search on {}, {} parameter(s), {} errors>".format(
+            self.resource, len(self.parsed_qs), len(self.errors)
+        )
 
     def __len__(self):
         return len(self.parsed_qs)
@@ -108,6 +129,7 @@ class Search:
         """Wrapper for urllib.parse.parse_qsl"""
 
         from urllib.parse import parse_qsl
+
         return parse_qsl(qs)
 
     def parse_qs(self, qs):
@@ -128,14 +150,14 @@ class Search:
             # 3) Parse any prefixes on value
             # 4) Cast the value to type
 
-            #Get modifier
+            # Get modifier
             par, mod = self.getModifier(param)
 
             # Chain parsing with modifier as resource
             # e.g., :Patient.name
             if mod and self.getChain(mod)[1]:
                 target_ep, chains = self.getChain(mod)
-                mod = None #not a true modifier
+                mod = None  # not a true modifier
             else:
                 par, chains = self.getChain(par)
                 target_ep = None
@@ -144,12 +166,16 @@ class Search:
             try:
                 type_ = self.search_mapping[par]
             except:
-                self.errors.append('<parameter> \'{}\' not found in mapping; Ignoring'.format(par))
+                self.errors.append(
+                    "<parameter> '{}' not found in mapping; Ignoring".format(par)
+                )
                 continue
 
             # Does type allow chaining
             if chains and not self.allowsChain(type_):
-                self.errors.append('<parameter> \'{}\' does not allow chaining; Ignoring'.format(par))
+                self.errors.append(
+                    "<parameter> '{}' does not allow chaining; Ignoring".format(par)
+                )
                 continue
 
             # Chains
@@ -157,33 +183,54 @@ class Search:
                 # If there is specified endpoint
                 if target_ep:
                     if target_ep in self.all_references[self.resource][par]:
-                        chain_tree = [x for x in self.getValidChains(self.resource, [par]+chains) \
-                                            if x[1].endpoint == target_ep]
+                        chain_tree = [
+                            x
+                            for x in self.getValidChains(self.resource, [par] + chains)
+                            if x[1].endpoint == target_ep
+                        ]
                     else:
-                        self.errors.append('\'{}\' is not valid reference endpoint for <parameter> \'{}\''.format(target_ep, par))
+                        self.errors.append(
+                            "'{}' is not valid reference endpoint for <parameter> '{}'".format(
+                                target_ep, par
+                            )
+                        )
                         continue
                 else:
-                    chain_tree = self.getValidChains(self.resource, [par]+chains)
+                    chain_tree = self.getValidChains(self.resource, [par] + chains)
             else:
                 chain_tree = None
 
-            #Chain overrules the original type and parameter
+            # Chain overrules the original type and parameter
             if chain_tree:
                 type_ = chain_tree[0][-1].ttype
                 par = chain_tree[0][-1].target
 
             if mod:
                 if not self.validModifier(mod, type_):
-                    raise TypeError('<parameter> \'{}\' of <type> \'{}\' cannot have modifier \'{}\''.format(par, type_, mod))
+                    raise TypeError(
+                        "<parameter> '{}' of <type> '{}' cannot have modifier '{}'".format(
+                            par, type_, mod
+                        )
+                    )
 
-            #Prefix
+            # Prefix
             pre, v = self.getPrefix(value, type_)
 
-            #Cast the value
+            # Cast the value
             value = self.getValidType(type_, v)
-            if value is False: raise ValueError('Cannot cast \'{}\' to type \'{}\''.format(v, type_))
+            if value is False:
+                raise ValueError("Cannot cast '{}' to type '{}'".format(v, type_))
 
-            pairs.append(FHIRSearchPair(modifier=mod, prefix=pre, value=value, parameter=par, type_=type_, chain=chain_tree))
+            pairs.append(
+                FHIRSearchPair(
+                    modifier=mod,
+                    prefix=pre,
+                    value=value,
+                    parameter=par,
+                    type_=type_,
+                    chain=chain_tree,
+                )
+            )
 
         return pairs
 
@@ -203,10 +250,10 @@ class Search:
         .. TODO:: Full token support [parameter]=[system]|[code] (system optional)
         """
         try:
-            if type_ == 'quantity':
-                value = value.split('|')[0] # Ignore system and code
-            if type_ == 'token':
-                value = value.split('|')[-1] # Ignore system
+            if type_ == "quantity":
+                value = value.split("|")[0]  # Ignore system and code
+            if type_ == "token":
+                value = value.split("|")[-1]  # Ignore system
             return self.search_cast[type_](value)
         except:
             return False
@@ -225,10 +272,10 @@ class Search:
         .. NOTE:: Only number, date, and quantity allow prefixes
         """
 
-        if type_ in ('number','date', 'quantity'):
+        if type_ in ("number", "date", "quantity"):
             for pf in self.allowed_prefixes:
                 if value.startswith(pf):
-                    return value[:len(pf)], value[len(pf):]
+                    return value[: len(pf)], value[len(pf) :]
         return None, value
 
     def validModifier(self, modifier, type_):
@@ -244,11 +291,16 @@ class Search:
 
         .. TODO:: Add reference 'type' modifier logic
         """
-        if type_ == 'reference': return True # e.g., :Patient.name, :Observation.id
-        if modifier in ('missing', 'exists'): return True
-        if modifier in ('exact', 'contains') and type_ == 'string': return True
-        if modifier in ('text', 'in', 'below', 'above', 'not-in') and type_ == 'token': return True
-        if modifier in ('below', 'above') and type_ == 'uri': return True
+        if type_ == "reference":
+            return True  # e.g., :Patient.name, :Observation.id
+        if modifier in ("missing", "exists"):
+            return True
+        if modifier in ("exact", "contains") and type_ == "string":
+            return True
+        if modifier in ("text", "in", "below", "above", "not-in") and type_ == "token":
+            return True
+        if modifier in ("below", "above") and type_ == "uri":
+            return True
         return False
 
     def getModifier(self, parameter):
@@ -261,9 +313,9 @@ class Search:
         :rtype: tuple(str, str) or tuple(str, None)
         """
 
-        base, *mod = parameter.split(':')
+        base, *mod = parameter.split(":")
         if mod:
-            return base, mod[0] #Should only be 1 (?)
+            return base, mod[0]  # Should only be 1 (?)
         return base, None
 
     def getValidChains(self, resource, chains, saved=[]):
@@ -279,7 +331,8 @@ class Search:
         """
 
         temp = [x for x in self.getChainTree(saved, resource, chains) if x]
-        if not temp: raise TypeError('No valid chains')
+        if not temp:
+            raise TypeError("No valid chains")
         return temp
 
     def allowsChain(self, type_):
@@ -291,7 +344,7 @@ class Search:
         :return: True or False
         :rtype: True or False
         """
-        return True if type_ == 'reference' else False
+        return True if type_ == "reference" else False
 
     def getChain(self, parameter):
         """
@@ -302,7 +355,7 @@ class Search:
         :return: (base_parameter, [chain(s)]) or (parameter, None)
         :rtype: tuple(str, list(str)) or tuple(str, None)
         """
-        base, *chain = parameter.split('.')
+        base, *chain = parameter.split(".")
         return base, chain or None
 
     def getChainTree(self, saved=[], resource=None, chains=[]):
@@ -323,17 +376,26 @@ class Search:
         if not chains:
             try:
                 d = self.all_types[resource][curr]
-                if d == 'reference': return [] #invalid if ends on reference
+                if d == "reference":
+                    return []  # invalid if ends on reference
                 else:
-                    return saved+[FHIRChain(endpoint=resource, target=curr, ttype=d)]
+                    return saved + [FHIRChain(endpoint=resource, target=curr, ttype=d)]
             except:
-                return [] #invalid if not valid parameter
+                return []  # invalid if not valid parameter
         else:
             try:
                 rs = self.all_references[resource][curr]
             except:
-                return [] #invalid if not valid reference
-            return [self.getChainTree(saved+[FHIRChain(endpoint=resource, target=curr, ttype='reference')], r, chains) for r in rs]
+                return []  # invalid if not valid reference
+            return [
+                self.getChainTree(
+                    saved
+                    + [FHIRChain(endpoint=resource, target=curr, ttype="reference")],
+                    r,
+                    chains,
+                )
+                for r in rs
+            ]
 
     @property
     def modifier(self):
@@ -421,7 +483,7 @@ class Search:
         :rtype: list(str)
         """
 
-        return [x for x in self.parsed_qs if x.parameter in self.all_types['control']]
+        return [x for x in self.parsed_qs if x.parameter in self.all_types["control"]]
 
     @property
     def error(self):
