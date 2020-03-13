@@ -1,4 +1,4 @@
-import unittest
+import pytest
 from fhir_parse_qs import Search
 from datetime import datetime
 from pendulum import now
@@ -9,7 +9,7 @@ qss = [
         #('Patient', '_has:Observation:patient:_has:AuditEvent:entity:user=MyUserId'),
         ]
 
-class TestQS(unittest.TestCase):
+class TestString:
 
     def test_not_supported(self):
         try:
@@ -117,6 +117,3 @@ class TestQS(unittest.TestCase):
         s = Search('Condition', '_text=(bone OR liver) and metastases')
         assert s[0].value == '(bone OR liver) and metastases'
         assert s[0].parameter == '_text'
-
-if __name__ == '__main__':
-    unittest.main()

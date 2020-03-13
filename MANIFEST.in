@@ -1,2 +1,5 @@
 include README.md
+include requirements.txt
+include dev-requirements.txt
+include fhir_parse_qs/VERSION
 recursive-include fhir_parse_qs *.py
