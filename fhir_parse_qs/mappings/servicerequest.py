@@ -1,0 +1,53 @@
+__all__ = ["servicerequest_mapping", "servicerequest_references"]
+
+servicerequest_mapping = {
+    "code": "token",
+    "identifier": "token",
+    "patient": "reference",
+    "encounter": "reference",
+    "authored": "date",
+    "based-on": "reference",
+    "body-site": "token",
+    "category": "token",
+    "instantiates-canonical": "reference",
+    "instantiates-uri": "uri",
+    "intent": "token",
+    "occurrence": "date",
+    "performer": "reference",
+    "performer-type": "token",
+    "priority": "token",
+    "replaces": "reference",
+    "requester": "reference",
+    "requisition": "token",
+    "specimen": "reference",
+    "status": "token",
+    "subject": "reference",
+}
+
+servicerequest_references = {
+    "patient": ["Patient"],
+    "encounter": ["Encounter"],
+    "based-on": ["CarePlan", "MedicationRequest", "ServiceRequest"],
+    "instantiates-canonical": ["PlanDefinition", "ActivityDefinition"],
+    "performer": [
+        "Practitioner",
+        "Organization",
+        "CareTeam",
+        "Device",
+        "Patient",
+        "HealthcareService",
+        "PractitionerRole",
+        "RelatedPerson",
+    ],
+    "replaces": ["ServiceRequest"],
+    "requester": [
+        "Practitioner",
+        "Organization",
+        "Device",
+        "Patient",
+        "PractitionerRole",
+        "RelatedPerson",
+    ],
+    "specimen": ["Specimen"],
+    "subject": ["Group", "Device", "Patient", "Location"],
+}
