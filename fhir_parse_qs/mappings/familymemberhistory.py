@@ -5,13 +5,20 @@ familymemberhistory_mapping = {
     "date": "date",
     "identifier": "token",
     "patient": "reference",
-    "definition": "reference",
-    "gender": "token",
+    "instantiates-canonical": "reference",
+    "instantiates-uri": "uri",
     "relationship": "token",
+    "sex": "token",
     "status": "token",
 }
 
 familymemberhistory_references = {
     "patient": ["Patient"],
-    "definition": ["Questionnaire", "PlanDefinition"],
+    "instantiates-canonical": [
+        "Questionnaire",
+        "Measure",
+        "PlanDefinition",
+        "OperationDefinition",
+        "ActivityDefinition",
+    ],
 }

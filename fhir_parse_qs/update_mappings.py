@@ -3,7 +3,7 @@ from urllib.request import urlretrieve
 from zipfile import ZipFile
 import os
 
-BASE_URL = "http://www.hl7.org/fhir/definitions.json.zip"
+BASE_URL = "http://www.hl7.org/fhir/search-parameters.json"
 JSON_FILE = "search-parameters.json"
 TARGET_DIR = "mappings/"
 
@@ -17,13 +17,12 @@ def setup():
 
 
 def download_specifications(url=BASE_URL):
-    local_file, _ = urlretrieve(url)
-    with ZipFile(local_file) as z:
-        z.extract(JSON_FILE)
+    urlretrieve(url, filename=JSON_FILE)
     print("Downloaded specifications.")
 
 
 def get_imported_json(target=JSON_FILE):
+    params = {}
     with open(target) as json_file:
         params = json.load(json_file)
     return params
@@ -64,7 +63,9 @@ def organize(entries):
         {"name": "_include", "type": "string", "targets": None},
         {"name": "_revinclude", "type": "string", "targets": None},
         {"name": "_summary", "type": "string", "targets": None},
-        {"name": "_containded", "type": "string", "targets": None},
+        {"name": "_total", "type": "number", "targets": None},
+        {"name": "_elements", "type": "string", "targets": None},
+        {"name": "_contained", "type": "string", "targets": None},
         {"name": "_containedType", "type": "string", "targets": None},
     ]
     return organized

@@ -4,6 +4,7 @@ bundle_mapping = {
     "composition": "reference",
     "identifier": "token",
     "message": "reference",
+    "timestamp": "date",
     "type": "token",
 }
 

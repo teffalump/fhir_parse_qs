@@ -5,8 +5,8 @@ researchstudy_mapping = {
     "date": "date",
     "focus": "token",
     "identifier": "token",
-    "jurisdiction": "token",
     "keyword": "token",
+    "location": "token",
     "partof": "reference",
     "principalinvestigator": "reference",
     "protocol": "reference",
@@ -18,7 +18,7 @@ researchstudy_mapping = {
 
 researchstudy_references = {
     "partof": ["ResearchStudy"],
-    "principalinvestigator": ["Practitioner"],
+    "principalinvestigator": ["Practitioner", "PractitionerRole"],
     "protocol": ["PlanDefinition"],
     "site": ["Location"],
     "sponsor": ["Organization"],

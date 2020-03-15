@@ -17,6 +17,6 @@ riskassessment_references = {
     "patient": ["Patient"],
     "encounter": ["Encounter"],
     "condition": ["Condition"],
-    "performer": ["Practitioner", "Device"],
+    "performer": ["Practitioner", "Device", "PractitionerRole"],
     "subject": ["Group", "Patient"],
 }

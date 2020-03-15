@@ -8,6 +8,7 @@ common_mapping = {
     "_profile": "uri",
     "_query": "token",
     "_security": "token",
+    "_source": "uri",
     "_tag": "token",
 }
 

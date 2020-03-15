@@ -3,15 +3,30 @@ __all__ = ["group_mapping", "group_references"]
 group_mapping = {
     "actual": "token",
     "characteristic": "token",
-    "characteristic-value": "composite",
     "code": "token",
     "exclude": "token",
     "identifier": "token",
+    "managing-entity": "reference",
     "member": "reference",
     "type": "token",
     "value": "token",
+    "characteristic-value": "composite",
 }
 
 group_references = {
-    "member": ["Practitioner", "Device", "Medication", "Patient", "Substance"],
+    "managing-entity": [
+        "Practitioner",
+        "Organization",
+        "PractitionerRole",
+        "RelatedPerson",
+    ],
+    "member": [
+        "Practitioner",
+        "Group",
+        "Device",
+        "Medication",
+        "Patient",
+        "Substance",
+        "PractitionerRole",
+    ],
 }

@@ -7,7 +7,7 @@ episodeofcare_mapping = {
     "type": "token",
     "care-manager": "reference",
     "condition": "reference",
-    "incomingreferral": "reference",
+    "incoming-referral": "reference",
     "organization": "reference",
     "status": "token",
 }
@@ -16,6 +16,6 @@ episodeofcare_references = {
     "patient": ["Patient"],
     "care-manager": ["Practitioner"],
     "condition": ["Condition"],
-    "incomingreferral": ["ReferralRequest"],
+    "incoming-referral": ["ServiceRequest"],
     "organization": ["Organization"],
 }

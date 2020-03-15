@@ -1,20 +1,28 @@
 __all__ = ["codesystem_mapping", "codesystem_references"]
 
 codesystem_mapping = {
-    "code": "token",
-    "content-mode": "token",
+    "context": "token",
+    "context-quantity": "quantity",
+    "context-type": "token",
     "date": "date",
     "description": "string",
-    "identifier": "token",
     "jurisdiction": "token",
-    "language": "token",
     "name": "string",
     "publisher": "string",
     "status": "token",
-    "system": "uri",
     "title": "string",
     "url": "uri",
     "version": "token",
+    "context-type-quantity": "composite",
+    "context-type-value": "composite",
+    "code": "token",
+    "content-mode": "token",
+    "identifier": "token",
+    "language": "token",
+    "supplements": "reference",
+    "system": "uri",
 }
 
-codesystem_references = {}
+codesystem_references = {
+    "supplements": ["CodeSystem"],
+}

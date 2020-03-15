@@ -3,8 +3,8 @@ __all__ = ["medicationstatement_mapping", "medicationstatement_references"]
 medicationstatement_mapping = {
     "code": "token",
     "identifier": "token",
-    "medication": "reference",
     "patient": "reference",
+    "medication": "reference",
     "status": "token",
     "category": "token",
     "context": "reference",
@@ -15,8 +15,8 @@ medicationstatement_mapping = {
 }
 
 medicationstatement_references = {
-    "medication": ["Medication"],
     "patient": ["Patient"],
+    "medication": ["Medication"],
     "context": ["EpisodeOfCare", "Encounter"],
     "part-of": [
         "MedicationDispense",
@@ -25,6 +25,12 @@ medicationstatement_references = {
         "Procedure",
         "MedicationStatement",
     ],
-    "source": ["Practitioner", "Organization", "Patient", "RelatedPerson"],
+    "source": [
+        "Practitioner",
+        "Organization",
+        "Patient",
+        "PractitionerRole",
+        "RelatedPerson",
+    ],
     "subject": ["Group", "Patient"],
 }

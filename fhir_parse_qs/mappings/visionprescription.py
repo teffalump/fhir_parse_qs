@@ -6,10 +6,11 @@ visionprescription_mapping = {
     "encounter": "reference",
     "datewritten": "date",
     "prescriber": "reference",
+    "status": "token",
 }
 
 visionprescription_references = {
     "patient": ["Patient"],
     "encounter": ["Encounter"],
-    "prescriber": ["Practitioner"],
+    "prescriber": ["Practitioner", "PractitionerRole"],
 }

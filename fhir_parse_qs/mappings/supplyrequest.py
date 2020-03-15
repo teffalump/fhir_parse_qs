@@ -6,10 +6,19 @@ supplyrequest_mapping = {
     "category": "token",
     "requester": "reference",
     "status": "token",
+    "subject": "reference",
     "supplier": "reference",
 }
 
 supplyrequest_references = {
-    "requester": ["Practitioner", "Organization", "Device", "Patient", "RelatedPerson"],
-    "supplier": ["Organization"],
+    "requester": [
+        "Practitioner",
+        "Organization",
+        "Device",
+        "Patient",
+        "PractitionerRole",
+        "RelatedPerson",
+    ],
+    "subject": ["Organization", "Patient", "Location"],
+    "supplier": ["Organization", "HealthcareService"],
 }

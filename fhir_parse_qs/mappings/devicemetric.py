@@ -9,6 +9,6 @@ devicemetric_mapping = {
 }
 
 devicemetric_references = {
-    "parent": ["DeviceComponent"],
+    "parent": ["Device"],
     "source": ["Device"],
 }

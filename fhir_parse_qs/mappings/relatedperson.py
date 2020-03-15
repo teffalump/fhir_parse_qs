@@ -17,6 +17,7 @@ relatedperson_mapping = {
     "identifier": "token",
     "name": "string",
     "patient": "reference",
+    "relationship": "token",
 }
 
 relatedperson_references = {

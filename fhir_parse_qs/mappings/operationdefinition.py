@@ -1,24 +1,32 @@
 __all__ = ["operationdefinition_mapping", "operationdefinition_references"]
 
 operationdefinition_mapping = {
-    "base": "reference",
-    "code": "token",
+    "context": "token",
+    "context-quantity": "quantity",
+    "context-type": "token",
     "date": "date",
     "description": "string",
-    "instance": "token",
     "jurisdiction": "token",
-    "kind": "token",
     "name": "string",
-    "param-profile": "reference",
     "publisher": "string",
     "status": "token",
-    "system": "token",
-    "type": "token",
+    "title": "string",
     "url": "uri",
     "version": "token",
+    "context-type-quantity": "composite",
+    "context-type-value": "composite",
+    "base": "reference",
+    "code": "token",
+    "input-profile": "reference",
+    "instance": "token",
+    "kind": "token",
+    "output-profile": "reference",
+    "system": "token",
+    "type": "token",
 }
 
 operationdefinition_references = {
     "base": ["OperationDefinition"],
-    "param-profile": ["StructureDefinition"],
+    "input-profile": ["StructureDefinition"],
+    "output-profile": ["StructureDefinition"],
 }

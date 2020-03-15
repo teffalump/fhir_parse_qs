@@ -5,7 +5,9 @@ schedule_mapping = {
     "actor": "reference",
     "date": "date",
     "identifier": "token",
-    "type": "token",
+    "service-category": "token",
+    "service-type": "token",
+    "specialty": "token",
 }
 
 schedule_references = {

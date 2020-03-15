@@ -1,9 +1,12 @@
 __all__ = ["slot_mapping", "slot_references"]
 
 slot_mapping = {
+    "appointment-type": "token",
     "identifier": "token",
     "schedule": "reference",
-    "slot-type": "token",
+    "service-category": "token",
+    "service-type": "token",
+    "specialty": "token",
     "start": "date",
     "status": "token",
 }

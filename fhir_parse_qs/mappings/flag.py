@@ -12,7 +12,7 @@ flag_mapping = {
 flag_references = {
     "patient": ["Patient"],
     "encounter": ["Encounter"],
-    "author": ["Practitioner", "Organization", "Device", "Patient"],
+    "author": ["Practitioner", "Organization", "Device", "Patient", "PractitionerRole"],
     "subject": [
         "Practitioner",
         "Group",

@@ -16,8 +16,8 @@ specimen_mapping = {
 }
 
 specimen_references = {
-    "collector": ["Practitioner"],
+    "collector": ["Practitioner", "PractitionerRole"],
     "parent": ["Specimen"],
     "patient": ["Patient"],
-    "subject": ["Group", "Device", "Patient", "Substance"],
+    "subject": ["Group", "Device", "Patient", "Substance", "Location"],
 }

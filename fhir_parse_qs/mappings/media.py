@@ -2,25 +2,41 @@ __all__ = ["media_mapping", "media_references"]
 
 media_mapping = {
     "based-on": "reference",
-    "context": "reference",
     "created": "date",
-    "date": "date",
     "device": "reference",
+    "encounter": "reference",
     "identifier": "token",
+    "modality": "token",
     "operator": "reference",
     "patient": "reference",
     "site": "token",
+    "status": "token",
     "subject": "reference",
-    "subtype": "token",
     "type": "token",
     "view": "token",
 }
 
 media_references = {
-    "based-on": ["ProcedureRequest"],
-    "context": ["EpisodeOfCare", "Encounter"],
+    "based-on": ["CarePlan", "ServiceRequest"],
     "device": ["Device", "DeviceMetric"],
-    "operator": ["Practitioner"],
+    "encounter": ["Encounter"],
+    "operator": [
+        "Practitioner",
+        "Organization",
+        "CareTeam",
+        "Device",
+        "Patient",
+        "PractitionerRole",
+        "RelatedPerson",
+    ],
     "patient": ["Patient"],
-    "subject": ["Practitioner", "Group", "Specimen", "Device", "Patient"],
+    "subject": [
+        "Practitioner",
+        "Group",
+        "Specimen",
+        "Device",
+        "Patient",
+        "PractitionerRole",
+        "Location",
+    ],
 }

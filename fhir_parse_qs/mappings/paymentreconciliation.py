@@ -4,16 +4,15 @@ paymentreconciliation_mapping = {
     "created": "date",
     "disposition": "string",
     "identifier": "token",
-    "organization": "reference",
     "outcome": "token",
+    "payment-issuer": "reference",
     "request": "reference",
-    "request-organization": "reference",
-    "request-provider": "reference",
+    "requestor": "reference",
+    "status": "token",
 }
 
 paymentreconciliation_references = {
-    "organization": ["Organization"],
-    "request": ["ProcessRequest"],
-    "request-organization": ["Organization"],
-    "request-provider": ["Practitioner"],
+    "payment-issuer": ["Organization"],
+    "request": ["Task"],
+    "requestor": ["Practitioner", "Organization", "PractitionerRole"],
 }

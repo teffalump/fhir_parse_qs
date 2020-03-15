@@ -1,7 +1,6 @@
 __all__ = ["account_mapping", "account_references"]
 
 account_mapping = {
-    "balance": "quantity",
     "identifier": "token",
     "name": "string",
     "owner": "reference",
@@ -21,6 +20,7 @@ account_references = {
         "Device",
         "Patient",
         "HealthcareService",
+        "PractitionerRole",
         "Location",
     ],
 }

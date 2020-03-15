@@ -7,6 +7,8 @@ nutritionorder_mapping = {
     "additive": "token",
     "datetime": "date",
     "formula": "token",
+    "instantiates-canonical": "reference",
+    "instantiates-uri": "uri",
     "oraldiet": "token",
     "provider": "reference",
     "status": "token",
@@ -16,5 +18,6 @@ nutritionorder_mapping = {
 nutritionorder_references = {
     "patient": ["Patient"],
     "encounter": ["Encounter"],
-    "provider": ["Practitioner"],
+    "instantiates-canonical": ["PlanDefinition", "ActivityDefinition"],
+    "provider": ["Practitioner", "PractitionerRole"],
 }

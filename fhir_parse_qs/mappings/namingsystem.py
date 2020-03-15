@@ -1,23 +1,25 @@
 __all__ = ["namingsystem_mapping", "namingsystem_references"]
 
 namingsystem_mapping = {
-    "contact": "string",
+    "context": "token",
+    "context-quantity": "quantity",
+    "context-type": "token",
     "date": "date",
     "description": "string",
-    "id-type": "token",
     "jurisdiction": "token",
-    "kind": "token",
     "name": "string",
-    "period": "date",
     "publisher": "string",
-    "replaced-by": "reference",
-    "responsible": "string",
     "status": "token",
+    "context-type-quantity": "composite",
+    "context-type-value": "composite",
+    "contact": "string",
+    "id-type": "token",
+    "kind": "token",
+    "period": "date",
+    "responsible": "string",
     "telecom": "token",
     "type": "token",
     "value": "string",
 }
 
-namingsystem_references = {
-    "replaced-by": ["NamingSystem"],
-}
+namingsystem_references = {}

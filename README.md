@@ -9,6 +9,12 @@ A library to parse FHIR query strings.
 - Built-in search parameters from FHIR standard
 - Supports modifiers, prefixes, and chains
 
+Releases 0.7.x and below used FHIR R3
+Releases 0.8.x use FHIR R4
+
+The `update_mappings.py` script generates the mappings from the [HL7
+releases](https://www.hl7.org/fhir/).
+
 #### Usage
 
     from fhir_parse_qs import Search

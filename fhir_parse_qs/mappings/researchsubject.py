@@ -6,9 +6,11 @@ researchsubject_mapping = {
     "individual": "reference",
     "patient": "reference",
     "status": "token",
+    "study": "reference",
 }
 
 researchsubject_references = {
     "individual": ["Patient"],
     "patient": ["Patient"],
+    "study": ["ResearchStudy"],
 }

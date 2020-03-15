@@ -10,6 +10,6 @@ supplydelivery_mapping = {
 
 supplydelivery_references = {
     "patient": ["Patient"],
-    "receiver": ["Practitioner"],
-    "supplier": ["Practitioner", "Organization"],
+    "receiver": ["Practitioner", "PractitionerRole"],
+    "supplier": ["Practitioner", "Organization", "PractitionerRole"],
 }

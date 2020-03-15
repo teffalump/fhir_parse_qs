@@ -1,27 +1,31 @@
 __all__ = ["adverseevent_mapping", "adverseevent_references"]
 
 adverseevent_mapping = {
+    "actuality": "token",
     "category": "token",
     "date": "date",
+    "event": "token",
     "location": "reference",
-    "reaction": "reference",
     "recorder": "reference",
+    "resultingcondition": "reference",
     "seriousness": "token",
+    "severity": "token",
     "study": "reference",
     "subject": "reference",
     "substance": "reference",
-    "type": "token",
 }
 
 adverseevent_references = {
     "location": ["Location"],
-    "reaction": ["Condition"],
-    "recorder": ["Practitioner", "Patient", "RelatedPerson"],
+    "recorder": ["Practitioner", "Patient", "PractitionerRole", "RelatedPerson"],
+    "resultingcondition": ["Condition"],
     "study": ["ResearchStudy"],
-    "subject": ["Device", "Medication", "Patient", "ResearchSubject"],
+    "subject": ["Practitioner", "Group", "Patient", "RelatedPerson"],
     "substance": [
+        "Immunization",
         "Device",
         "Medication",
+        "Procedure",
         "Substance",
         "MedicationAdministration",
         "MedicationStatement",

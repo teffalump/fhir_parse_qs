@@ -8,8 +8,6 @@ patient_mapping = {
     "address-postalcode": "string",
     "address-state": "string",
     "address-use": "token",
-    "animal-breed": "token",
-    "animal-species": "token",
     "birthdate": "date",
     "death-date": "date",
     "deceased": "token",
@@ -29,7 +27,7 @@ patient_mapping = {
 }
 
 patient_references = {
-    "general-practitioner": ["Practitioner", "Organization"],
+    "general-practitioner": ["Practitioner", "Organization", "PractitionerRole"],
     "link": ["Patient", "RelatedPerson"],
     "organization": ["Organization"],
 }

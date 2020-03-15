@@ -9,12 +9,14 @@ claimresponse_mapping = {
     "patient": "reference",
     "payment-date": "date",
     "request": "reference",
-    "request-provider": "reference",
+    "requestor": "reference",
+    "status": "token",
+    "use": "token",
 }
 
 claimresponse_references = {
     "insurer": ["Organization"],
     "patient": ["Patient"],
     "request": ["Claim"],
-    "request-provider": ["Practitioner"],
+    "requestor": ["Practitioner", "Organization", "PractitionerRole"],
 }

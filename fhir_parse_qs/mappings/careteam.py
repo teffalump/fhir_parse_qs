@@ -5,7 +5,6 @@ careteam_mapping = {
     "identifier": "token",
     "patient": "reference",
     "category": "token",
-    "context": "reference",
     "encounter": "reference",
     "participant": "reference",
     "status": "token",
@@ -14,13 +13,13 @@ careteam_mapping = {
 
 careteam_references = {
     "patient": ["Patient"],
-    "context": ["EpisodeOfCare", "Encounter"],
     "encounter": ["Encounter"],
     "participant": [
         "Practitioner",
         "Organization",
         "CareTeam",
         "Patient",
+        "PractitionerRole",
         "RelatedPerson",
     ],
     "subject": ["Group", "Patient"],

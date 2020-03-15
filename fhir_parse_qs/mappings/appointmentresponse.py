@@ -16,6 +16,7 @@ appointmentresponse_references = {
         "Device",
         "Patient",
         "HealthcareService",
+        "PractitionerRole",
         "RelatedPerson",
         "Location",
     ],

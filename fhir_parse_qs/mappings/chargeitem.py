@@ -9,9 +9,9 @@ chargeitem_mapping = {
     "factor-override": "number",
     "identifier": "token",
     "occurrence": "date",
-    "participant-actor": "reference",
-    "participant-role": "token",
     "patient": "reference",
+    "performer-actor": "reference",
+    "performer-function": "token",
     "performing-organization": "reference",
     "price-override": "quantity",
     "quantity": "quantity",
@@ -23,15 +23,24 @@ chargeitem_mapping = {
 chargeitem_references = {
     "account": ["Account"],
     "context": ["EpisodeOfCare", "Encounter"],
-    "enterer": ["Practitioner", "Organization", "Device", "Patient", "RelatedPerson"],
-    "participant-actor": [
+    "enterer": [
         "Practitioner",
         "Organization",
         "Device",
         "Patient",
+        "PractitionerRole",
         "RelatedPerson",
     ],
     "patient": ["Patient"],
+    "performer-actor": [
+        "Practitioner",
+        "Organization",
+        "CareTeam",
+        "Device",
+        "Patient",
+        "PractitionerRole",
+        "RelatedPerson",
+    ],
     "performing-organization": ["Organization"],
     "requesting-organization": ["Organization"],
     "service": [

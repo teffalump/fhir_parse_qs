@@ -20,7 +20,7 @@ allergyintolerance_mapping = {
 }
 
 allergyintolerance_references = {
-    "asserter": ["Practitioner", "Patient", "RelatedPerson"],
+    "asserter": ["Practitioner", "Patient", "PractitionerRole", "RelatedPerson"],
     "patient": ["Patient"],
-    "recorder": ["Practitioner", "Patient"],
+    "recorder": ["Practitioner", "Patient", "PractitionerRole", "RelatedPerson"],
 }

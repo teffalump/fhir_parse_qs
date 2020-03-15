@@ -1,12 +1,11 @@
 __all__ = ["messagedefinition_mapping", "messagedefinition_references"]
 
 messagedefinition_mapping = {
-    "category": "token",
+    "context": "token",
+    "context-quantity": "quantity",
+    "context-type": "token",
     "date": "date",
     "description": "string",
-    "event": "token",
-    "focus": "token",
-    "identifier": "token",
     "jurisdiction": "token",
     "name": "string",
     "publisher": "string",
@@ -14,6 +13,15 @@ messagedefinition_mapping = {
     "title": "string",
     "url": "uri",
     "version": "token",
+    "context-type-quantity": "composite",
+    "context-type-value": "composite",
+    "identifier": "token",
+    "category": "token",
+    "event": "token",
+    "focus": "token",
+    "parent": "reference",
 }
 
-messagedefinition_references = {}
+messagedefinition_references = {
+    "parent": ["PlanDefinition", "ActivityDefinition"],
+}

@@ -6,7 +6,9 @@ control_mapping = {
     "_include": "string",
     "_revinclude": "string",
     "_summary": "string",
-    "_containded": "string",
+    "_total": "number",
+    "_elements": "string",
+    "_contained": "string",
     "_containedType": "string",
 }
 

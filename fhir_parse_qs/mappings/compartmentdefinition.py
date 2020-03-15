@@ -1,16 +1,20 @@
 __all__ = ["compartmentdefinition_mapping", "compartmentdefinition_references"]
 
 compartmentdefinition_mapping = {
-    "code": "token",
+    "context": "token",
+    "context-quantity": "quantity",
+    "context-type": "token",
     "date": "date",
     "description": "string",
-    "jurisdiction": "token",
     "name": "string",
     "publisher": "string",
-    "resource": "token",
     "status": "token",
-    "title": "string",
     "url": "uri",
+    "version": "token",
+    "context-type-quantity": "composite",
+    "context-type-value": "composite",
+    "code": "token",
+    "resource": "token",
 }
 
 compartmentdefinition_references = {}
