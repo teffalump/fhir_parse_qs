@@ -1,6 +1,5 @@
 import json
 from urllib.request import urlretrieve
-from zipfile import ZipFile
 import os
 
 BASE_URL = "http://www.hl7.org/fhir/search-parameters.json"

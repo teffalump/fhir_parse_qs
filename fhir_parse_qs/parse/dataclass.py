@@ -1,4 +1,5 @@
 from collections import namedtuple
+from urllib.parse import parse_qsl
 from pendulum import parse
 from fhir_parse_qs.mappings import search_references, search_types
 
@@ -15,8 +16,8 @@ class Search:
 
     :Example:
 
-    >>> import fhir_parse_qs
-    >>> query = fhir_parse_qs.Search('Patient', 'name=peter')
+    >>> from fhir_parse_qs import Search
+    >>> query = Search('Patient', 'name=peter')
     >>> query.endpoint
     'Patient'
 
@@ -85,7 +86,7 @@ class Search:
 
     def __getitem__(self, key):
         """
-        Retrieves FHIRSearchPain by parameter or index
+        Retrieves FHIRSearchPair by parameter or index
 
         :param key: key
         :type key: str or int
@@ -127,8 +128,6 @@ class Search:
     @staticmethod
     def naive_parse_qs(qs):
         """Wrapper for urllib.parse.parse_qsl"""
-
-        from urllib.parse import parse_qsl
 
         return parse_qsl(qs)
 

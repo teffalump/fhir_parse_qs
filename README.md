@@ -28,10 +28,10 @@ releases](https://www.hl7.org/fhir/).
     search.endpoint --> 'Patient'
 
     # all the namedtuples
-    search.parsed --> [FHIRSearch(...)]
+    search.parsed --> [FHIRSearchPair(...)]
 
     # index as key; each parameter/value pair gets parsed into a namedtuple
-    search[0] --> FHIRSearch(...)
+    search[0] --> FHIRSearchPair(...)
     search[0].modifier --> None
     search[0].prefix --> None
     search[0].value --> 'bob'
@@ -40,11 +40,11 @@ releases](https://www.hl7.org/fhir/).
     search[0].chain --> None
 
     # act like dict with parameter as key
-    search['name'] --> FHIRSearch(...) #list if non-unique parameter
+    search['name'] --> FHIRSearchPair(...) #list if non-unique parameter
 
     # iterate over the parameter/value pairs
     for x in search:
-         print(x) --> FHIRSearch(...)
+         print(x) --> FHIRSearchPair(...)
 
     # ignores and logs unrecognized parameters
     search = Search('Patient', 'random=test')
