@@ -64,3 +64,11 @@ releases](https://www.hl7.org/fhir/).
 
     # return control parameters (eg, _sort, _count, etc)
     search.control --> [...]
+
+#### TODO
+
+- Narrow allowed chains (return error for ambiguous chains)
+- The `_filter` parameter
+- Coding systems and units
+- Reverse chains
+- Composite searches
