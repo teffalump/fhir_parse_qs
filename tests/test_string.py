@@ -90,13 +90,13 @@ class TestString:
         s = Search("Observation", "value-quantity=gt234||mg")
         assert s["value-quantity"].value == 234
         assert s["value-quantity"].prefix == "gt"
-        assert s["value-quantity"].system == ""
+        assert s["value-quantity"].system == None
         assert s["value-quantity"].code == "mg"
         s = Search("Observation", "value-quantity=gt234")
         assert s["value-quantity"].value == 234
         assert s["value-quantity"].prefix == "gt"
-        assert s["value-quantity"].system == ""
-        assert s["value-quantity"].code == ""
+        assert s["value-quantity"].system == None
+        assert s["value-quantity"].code == None
         s = Search("Observation", "value-quantity=gt2.34e2|http://loinc.org|mg")
         assert s["value-quantity"].value == 234
         assert s["value-quantity"].prefix == "gt"
@@ -110,11 +110,11 @@ class TestString:
         assert s["code"].code == None
         s = Search("Condition", "code=|ha125")
         assert s["code"].value == "ha125"
-        assert s["code"].system == ""
+        assert s["code"].system == None
         assert s["code"].code == None
         s = Search("Condition", "code=ha125")
         assert s["code"].value == "ha125"
-        assert s["code"].system == ""
+        assert s["code"].system == None
         assert s["code"].code == None
 
     def test_chain(self):

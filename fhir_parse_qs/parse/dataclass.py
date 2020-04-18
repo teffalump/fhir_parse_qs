@@ -134,8 +134,7 @@ class Search:
     def parse_qs(self, qs):
         """Parse the query string
 
-        :param qs: query string
-        :type qs: str
+        :param str qs: query string
         :return: parsed query string
         :rtype: list(FHIRSearchPair)
         """
@@ -146,8 +145,8 @@ class Search:
 
             # 1) Get any modifiers on parameter
             # 2) Parse any chains on parameter
-            # 3) Parse any pre- and post-fixes on value
-            # 4) Cast the value to type
+            # 3) Parse the value string according to parameter type
+            # 4) Cast the value according to parameter type
 
             # Get modifier
             par, mod = self.getModifier(param)
@@ -212,43 +211,59 @@ class Search:
                         )
                     )
 
-            # Parse prefix and postfix by type
-            code = None
-            system = None
+            # Parse according to type
             if type_ == "quantity":
-                units = self.get_system_and_code(value, quantity=True)
-                system = units["system"]
-                code = units["code"]
-                pre, v = self.getPrefix(units["number"], type_)
+                value_dict = self.parse_quantity(value)
             elif type_ == "token":
-                units = self.get_system_and_code(value, quantity=False)
-                system = units["system"]
-                pre, v = self.getPrefix(units["code"], type_)
-            elif type_ == "composite":
-                # TODO
+                value_dict = self.parse_token(value)
+            elif type_ == "uri":
+                value_dict = self.parse_uri(value)
+            elif type_ == "string":
+                value_dict = self.parse_string(value)
+            elif type_ == "date":
+                value_dict = self.parse_date(value)
+            elif type_ == "number":
+                value_dict = self.parse_number(value)
+            elif type_ == "reference":
+                value_dict = self.parse_reference(value)
+            else: # Special, Composite
                 pre, v = self.getPrefix(value, type_)
-            else:
-                pre, v = self.getPrefix(value, type_)
+                cast_value = self.cast_value(type_, v)
+                value_dict= {
+                        'system': None,
+                        'code': None,
+                        'value': cast_value,
+                        'prefix': pre}
 
-            # Cast the value
-            value = self.getValidType(type_, v)
-            if value is False:
-                raise ValueError("Cannot cast '{}' to type '{}'".format(v, type_))
 
             pairs.append(
                 FHIRSearchPair(
                     modifier=mod,
-                    prefix=pre,
-                    value=value,
+                    prefix=value_dict['prefix'],
+                    value=value_dict["value"],
                     parameter=par,
                     type_=type_,
                     chain=chain_tree,
-                    system=system,
-                    code=code,
+                    system=value_dict["system"],
+                    code=value_dict["code"],
                 )
             )
 
         return pairs
+
+    def cast_value(self, parameter_type, parameter_value):
+        """Cast value according to parameter type
+
+        :param str parameter_type: parameter type
+        :param str parameter_value: parameter value
+        :return: cast value
+        :rtype: variable
+        :raises ValueError: If error while casting
+        """
+        value = self.getValidType(parameter_type, parameter_value)
+        if value is False:
+            raise ValueError("Cannot cast '{}' to type '{}'".format(parameter_value, parameter_type))
+        return value
 
     def getValidType(self, type_, value):
         """
@@ -354,6 +369,185 @@ class Search:
                 return {"code": units[0], "system": ""}
             else:
                 return {"system": units[0], "code": units[1]}
+
+    def parse_quantity(self, full_string):
+        """Parse a quantity-type value string.
+
+        :param str full_string: Unadulterated value string
+        :return:
+            Parsed value string into dictionary
+        :return:
+            dict
+        """
+
+        # Parse postfix (system and code)
+        expr_dict = self.get_system_and_code(full_string, quantity=True)
+
+        # Parse value and prefix
+        prefix, value = self.getPrefix(expr_dict["number"], "quantity")
+
+        # Cast value
+        cast_value = self.cast_value("quantity", value)
+
+        return {
+            "value": cast_value,
+            "prefix": prefix,
+            "system": expr_dict["system"] or None,
+            "code": expr_dict["code"] or None,
+        }
+
+    def parse_token(self, full_string):
+        """ Parse a token-type value string.
+
+        :param str full_string: Unadulterated value string
+        :return:
+            Parsed value string into dictionary
+        :return:
+            dict
+        """
+
+        # Parse postfix (system and code)
+        expr_dict = self.get_system_and_code(full_string, quantity=False)
+
+        # Parse value and prefix
+        prefix, value = self.getPrefix(expr_dict["code"], "token")
+
+        # Cast value
+        cast_value = self.cast_value("token", value)
+
+        return {
+            "value": cast_value,
+            "prefix": prefix,
+            "system": expr_dict["system"] or None,
+            "code": None,
+        }
+
+    def parse_reference(self, full_string):
+        """ Parse a reference-type value string.
+
+        Per standard:
+
+            [parameter]=[id] the logical [id] of a resource using a local reference (i.e. a relative reference)
+            [parameter]=[type]/[id] the logical [id] of a resource of a specified type using a local reference (i.e. a relative reference), for when the reference can point to different types of resources (e.g. Observation.subject)
+            [parameter]=[url] where the [url] is an absolute URL - a reference to a resource by its absolute location, or by it's canonical URL
+
+        As such, no need for complex parsing.
+
+        :param str full_string: Unadulterated value string
+        :return:
+            Parsed value string into dictionary
+        :return:
+            dict
+        """
+        prefix, value = self.getPrefix(full_string, "reference")
+
+        # Cast value
+        cast_value = self.cast_value("reference", value)
+
+        return {
+                "value": cast_value,
+                "prefix": prefix,
+                "system": None,
+                "code": None
+        }
+
+    def parse_uri(self, full_string):
+        """ Parse a uri-type value string.
+
+        Per standard, there is no special parsing.
+
+        :param str full_string: Unadulterated value string
+        :return:
+            Parsed value string into dictionary
+        :return:
+            dict
+        """
+
+        prefix, value = self.getPrefix(full_string, "uri")
+
+        # Cast value
+        cast_value = self.cast_value("uri", value)
+
+        return {
+                "value": cast_value,
+                "prefix": prefix,
+                "system": None,
+                "code": None
+        }
+
+    def parse_string(self, full_string):
+        """ Parse a string-type value string.
+
+        Per standard, there is no special parsing.
+
+        :param str full_string: Unadulterated value string
+        :return:
+            Parsed value string into dictionary
+        :return:
+            dict
+        """
+
+        prefix, value = self.getPrefix(full_string, "string")
+
+        # Cast value
+        cast_value = self.cast_value("string", value)
+
+        return {
+                "value": cast_value,
+                "prefix": prefix,
+                "system": None,
+                "code": None
+        }
+
+    def parse_number(self, full_string):
+        """ Parse a number-type value string.
+
+        Per standard, there is no special parsing.
+
+        :param str full_string: Unadulterated value string
+        :return:
+            Parsed value string into dictionary
+        :return:
+            dict
+        """
+
+        prefix, value = self.getPrefix(full_string, "number")
+
+        # Cast value
+        cast_value = self.cast_value("number", value)
+
+        return {
+                "value": cast_value,
+                "prefix": prefix,
+                "system": None,
+                "code": None
+        }
+
+    def parse_date(self, full_string):
+        """ Parse a date-type value string.
+
+        Per standard, there is no special parsing.
+
+        :param str full_string: Unadulterated value string
+        :return:
+            Parsed value string into dictionary
+        :return:
+            dict
+        """
+
+        prefix, value = self.getPrefix(full_string, "date")
+
+        # Cast value
+        cast_value = self.cast_value("date", value)
+
+        return {
+                "value": cast_value,
+                "prefix": prefix,
+                "system": None,
+                "code": None
+        }
+
+
 
     def getModifier(self, parameter):
         """
