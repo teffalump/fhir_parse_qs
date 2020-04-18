@@ -157,7 +157,7 @@ class TestString:
         assert s["clinical-status"][1].value == "false"
         assert s["clinical-status"][1].modifier == "exists"
 
-    def test_or(self):
+    def test_text(self):
         s = Search("Condition", "_text=(bone OR liver) and metastases")
         assert s[0].value == "(bone OR liver) and metastases"
         assert s[0].parameter == "_text"

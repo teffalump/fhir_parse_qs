@@ -226,20 +226,20 @@ class Search:
                 value_dict = self.parse_number(value)
             elif type_ == "reference":
                 value_dict = self.parse_reference(value)
-            else: # Special, Composite
+            else:  # Special, Composite
                 pre, v = self.getPrefix(value, type_)
                 cast_value = self.cast_value(type_, v)
-                value_dict= {
-                        'system': None,
-                        'code': None,
-                        'value': cast_value,
-                        'prefix': pre}
-
+                value_dict = {
+                    "system": None,
+                    "code": None,
+                    "value": cast_value,
+                    "prefix": pre,
+                }
 
             pairs.append(
                 FHIRSearchPair(
                     modifier=mod,
-                    prefix=value_dict['prefix'],
+                    prefix=value_dict["prefix"],
                     value=value_dict["value"],
                     parameter=par,
                     type_=type_,
@@ -262,7 +262,9 @@ class Search:
         """
         value = self.getValidType(parameter_type, parameter_value)
         if value is False:
-            raise ValueError("Cannot cast '{}' to type '{}'".format(parameter_value, parameter_type))
+            raise ValueError(
+                "Cannot cast '{}' to type '{}'".format(parameter_value, parameter_type)
+            )
         return value
 
     def getValidType(self, type_, value):
@@ -444,12 +446,7 @@ class Search:
         # Cast value
         cast_value = self.cast_value("reference", value)
 
-        return {
-                "value": cast_value,
-                "prefix": prefix,
-                "system": None,
-                "code": None
-        }
+        return {"value": cast_value, "prefix": prefix, "system": None, "code": None}
 
     def parse_uri(self, full_string):
         """ Parse a uri-type value string.
@@ -468,12 +465,7 @@ class Search:
         # Cast value
         cast_value = self.cast_value("uri", value)
 
-        return {
-                "value": cast_value,
-                "prefix": prefix,
-                "system": None,
-                "code": None
-        }
+        return {"value": cast_value, "prefix": prefix, "system": None, "code": None}
 
     def parse_string(self, full_string):
         """ Parse a string-type value string.
@@ -492,12 +484,7 @@ class Search:
         # Cast value
         cast_value = self.cast_value("string", value)
 
-        return {
-                "value": cast_value,
-                "prefix": prefix,
-                "system": None,
-                "code": None
-        }
+        return {"value": cast_value, "prefix": prefix, "system": None, "code": None}
 
     def parse_number(self, full_string):
         """ Parse a number-type value string.
@@ -516,12 +503,7 @@ class Search:
         # Cast value
         cast_value = self.cast_value("number", value)
 
-        return {
-                "value": cast_value,
-                "prefix": prefix,
-                "system": None,
-                "code": None
-        }
+        return {"value": cast_value, "prefix": prefix, "system": None, "code": None}
 
     def parse_date(self, full_string):
         """ Parse a date-type value string.
@@ -540,14 +522,7 @@ class Search:
         # Cast value
         cast_value = self.cast_value("date", value)
 
-        return {
-                "value": cast_value,
-                "prefix": prefix,
-                "system": None,
-                "code": None
-        }
-
-
+        return {"value": cast_value, "prefix": prefix, "system": None, "code": None}
 
     def getModifier(self, parameter):
         """
