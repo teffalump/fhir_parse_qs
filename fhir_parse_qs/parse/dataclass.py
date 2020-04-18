@@ -1,12 +1,12 @@
 from collections import namedtuple
 from urllib.parse import parse_qsl
-from pendulum import parse
+from pendulum import parse as parse_dt
 from fhir_parse_qs.mappings import search_references, search_types
 
 __all__ = ["Search"]
 
 FHIRSearchPair = namedtuple(
-    "FHIRSearchPair", "modifier prefix parameter value type_ chain"
+    "FHIRSearchPair", "modifier prefix parameter value type_ chain system code"
 )
 FHIRChain = namedtuple("FHIRChain", "endpoint target ttype")
 
@@ -22,7 +22,7 @@ class Search:
     'Patient'
 
     .. note:: This class uses namedtuples
-        - FHIRSearchPair: modifier, prefix, parameter, value, type_, chain
+        - FHIRSearchPair: modifier, prefix, parameter, value, type_, chain, system, code
         - FHIRChain: endpoint, target, ttype
     """
 
@@ -46,7 +46,7 @@ class Search:
         "string": str,
         "reference": str,
         "token": str,
-        "date": parse,
+        "date": parse_dt,
         "composite": str,
         "quantity": float,
         "uri": str,
@@ -146,7 +146,7 @@ class Search:
 
             # 1) Get any modifiers on parameter
             # 2) Parse any chains on parameter
-            # 3) Parse any prefixes on value
+            # 3) Parse any pre- and post-fixes on value
             # 4) Cast the value to type
 
             # Get modifier
@@ -212,8 +212,23 @@ class Search:
                         )
                     )
 
-            # Prefix
-            pre, v = self.getPrefix(value, type_)
+            # Parse prefix and postfix by type
+            code = None
+            system = None
+            if type_ == "quantity":
+                units = self.get_system_and_code(value, quantity=True)
+                system = units["system"]
+                code = units["code"]
+                pre, v = self.getPrefix(units["number"], type_)
+            elif type_ == "token":
+                units = self.get_system_and_code(value, quantity=False)
+                system = units["system"]
+                pre, v = self.getPrefix(units["code"], type_)
+            elif type_ == "composite":
+                # TODO
+                pre, v = self.getPrefix(value, type_)
+            else:
+                pre, v = self.getPrefix(value, type_)
 
             # Cast the value
             value = self.getValidType(type_, v)
@@ -228,6 +243,8 @@ class Search:
                     parameter=par,
                     type_=type_,
                     chain=chain_tree,
+                    system=system,
+                    code=code,
                 )
             )
 
@@ -237,22 +254,13 @@ class Search:
         """
         Returns parsed value in correct type or False
 
-        :param type_: parameter type
-        :type type_: str
-        :param value: parameter value
-        :type value: str
+        :param str type_: parameter type
+        :param str value: parameter value
         :return: cast value or False if failed
         :rtype: variable
 
-
-        .. TODO:: Full quantity support [parameter]=[prefix][number]|[system]|[code]
-        .. TODO:: Full token support [parameter]=[system]|[code] (system optional)
         """
         try:
-            if type_ == "quantity":
-                value = value.split("|")[0]  # Ignore system and code
-            if type_ == "token":
-                value = value.split("|")[-1]  # Ignore system
             return self.search_cast[type_](value)
         except:
             return False
@@ -302,12 +310,56 @@ class Search:
             return True
         return False
 
+    def get_composite(self, value):
+        """
+        Split on '$' to obtain composite search parameters.
+
+        :param str value:
+            Target string
+        :return:
+            List of strings of composite search
+        :rtype:
+            list
+
+        ::note: Composite parameters do not have modifiers
+        """
+        return value.split("$")
+
+    def get_system_and_code(self, value, quantity=True):
+        """
+        Extract the system and code values. Both `Token` and `Quantity` types use these extensively (but differently).
+
+        Quantity = [prefix][number]|[system]|[code]
+        Token = [system]|[code] --- code is value, system can be value, too (strange)
+
+        :param str value:
+            Query string
+        :param bool quantity:
+            If Quantity type or not. Default True.
+        :return:
+            Parsed value
+        :rtype:
+            dict
+        """
+
+        if quantity == True:
+            number, *units = value.split("|")
+            if units:  # Has postfix
+                return {"number": number, "system": units[0], "code": units[1]}
+            else:
+                return {"number": number, "system": "", "code": ""}
+        else:
+            units = value.split("|")
+            if len(units) == 1:
+                return {"code": units[0], "system": ""}
+            else:
+                return {"system": units[0], "code": units[1]}
+
     def getModifier(self, parameter):
         """
         Split on ':' to get any modifiers
 
-        :param parameter: target string
-        :type parameter: str
+        :param str parameter: target string
         :return: (base_parameter, modifier) or (parameter, None)
         :rtype: tuple(str, str) or tuple(str, None)
         """

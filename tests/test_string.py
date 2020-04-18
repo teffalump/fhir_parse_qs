@@ -9,8 +9,19 @@ qss = [
         'filter=name eq http://loinc.org|1234-5 and subject.name co "peter"',
     ),
     (
+        # Search for all diagnostic reports that contain on observation with a potassium value of >5.4 mmol/L (UCUM)
         "DiagnosticReport",
         "result.code-value-quantity=http://loinc.org|2823-3$gt5.4|http://unitsofmeasure.org|mmol/L",
+    ),
+    (
+        # Search for all questionnaires that have a clinical focus = "Substance abuse prevention assessment (procedure)"
+        "Questionnaire",
+        "context-type-value=focus$http://snomed.info/sct|408934002",
+    ),
+    (
+        # Search for all groups that have a characteristic "gender" with a text value of "mixed"
+        "Group",
+        "characteristic-value=gender$mixed",
     ),
     # ('Patient', '_has:Observation:patient:_has:AuditEvent:entity:user=MyUserId'),
 ]
@@ -70,14 +81,41 @@ class TestString:
         assert isinstance(s["date"][1].value, datetime)
         assert s["date"][1].value < n
 
-        # quantity
+    def test_quantity(self):
         s = Search("Observation", "value-quantity=gt234|http://loinc.org|mg")
         assert s["value-quantity"].value == 234
         assert s["value-quantity"].prefix == "gt"
+        assert s["value-quantity"].system == "http://loinc.org"
+        assert s["value-quantity"].code == "mg"
+        s = Search("Observation", "value-quantity=gt234||mg")
+        assert s["value-quantity"].value == 234
+        assert s["value-quantity"].prefix == "gt"
+        assert s["value-quantity"].system == ""
+        assert s["value-quantity"].code == "mg"
+        s = Search("Observation", "value-quantity=gt234")
+        assert s["value-quantity"].value == 234
+        assert s["value-quantity"].prefix == "gt"
+        assert s["value-quantity"].system == ""
+        assert s["value-quantity"].code == ""
+        s = Search("Observation", "value-quantity=gt2.34e2|http://loinc.org|mg")
+        assert s["value-quantity"].value == 234
+        assert s["value-quantity"].prefix == "gt"
+        assert s["value-quantity"].system == "http://loinc.org"
+        assert s["value-quantity"].code == "mg"
 
     def test_token(self):
         s = Search("Condition", "code=http://acme.org/conditions/codes|ha125")
         assert s["code"].value == "ha125"
+        assert s["code"].system == "http://acme.org/conditions/codes"
+        assert s["code"].code == None
+        s = Search("Condition", "code=|ha125")
+        assert s["code"].value == "ha125"
+        assert s["code"].system == ""
+        assert s["code"].code == None
+        s = Search("Condition", "code=ha125")
+        assert s["code"].value == "ha125"
+        assert s["code"].system == ""
+        assert s["code"].code == None
 
     def test_chain(self):
         s = Search("Observation", "subject:Patient.name=peter")
