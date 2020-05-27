@@ -55,10 +55,10 @@ The `update_mappings.py` script generates the mappings from the [HL7 FHIR releas
     search[0].value ==> 'peter'
     search[0].chain ==> [[FHIRChain(...), FHIRChain(...)], ...]
     search[0].chain[0][0].endpoint ==> 'Observation'
-    search[0].chain[0][0].tar ==> 'patient'
+    search[0].chain[0][0].target ==> 'patient'
     search[0].chain[0][0].ttype ==> 'reference'
     search[0].chain[0][1].endpoint ==> 'Patient'
-    search[0].chain[0][1].tar ==> 'name'
+    search[0].chain[0][1].target ==> 'name'
     search[0].chain[0][1].ttype ==> 'string'
 
     # supports systems and codes
