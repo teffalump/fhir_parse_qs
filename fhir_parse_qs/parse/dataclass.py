@@ -181,7 +181,9 @@ class Search:
                     if target_ep in self.all_references[self.resource][par]:
                         chain_tree = [
                             x
-                            for x in self.get_non_empty_chains(self.resource, [par] + chains)
+                            for x in self.get_non_empty_chains(
+                                self.resource, [par] + chains
+                            )
                             if x[1].endpoint == target_ep
                         ]
                     else:
@@ -192,13 +194,14 @@ class Search:
                         )
                         continue
                 else:
-                    chain_tree = self.get_non_empty_chains(self.resource, [par] + chains)
+                    chain_tree = self.get_non_empty_chains(
+                        self.resource, [par] + chains
+                    )
             else:
                 chain_tree = None
 
-
             # Evaluate chain parsing
-            if chain_tree is not None: # Should there be a chain_tree
+            if chain_tree is not None:  # Should there be a chain_tree
 
                 # Return errors if no chains or too many
                 if len(chain_tree) == 0:

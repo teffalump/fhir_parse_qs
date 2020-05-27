@@ -138,18 +138,18 @@ class TestString:
         assert len(s["name"].chain) == 1
         assert s["name"].value == "peter"
         try:
-            s = Search("Observation", "subject.organization=peter") # None
+            s = Search("Observation", "subject.organization=peter")  # None
         except TypeError:
             pass
         else:
             assert False
         try:
-            s = Search("Observation", "subject.name=peter") # Ambiguous
+            s = Search("Observation", "subject.name=peter")  # Ambiguous
         except TypeError:
             pass
         else:
             assert False
-        s = Search("Observation", "subject.gender=male") # Only 1 valid
+        s = Search("Observation", "subject.gender=male")  # Only 1 valid
 
     # def test_chain_plus(self):
     # s = Search('Observation', 'code=http://loinc.org|1234-5&subject.name=peter')
