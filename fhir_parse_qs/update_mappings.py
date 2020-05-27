@@ -102,22 +102,17 @@ def write_init(data):
         f.write("__all__=['search_types', 'search_references']\n\n")
         for resource in sorted(data):
             f.write(
-                "from .{} import {}, {}\n".format(
-                    resource.lower(),
-                    resource.lower() + "_mapping",
-                    resource.lower() + "_references",
+                f"from .{resource.lower()} import {resource.lower()}_mapping, {resource.lower()}_references\n"
                 )
-            )
-        f.write("\n")
-        f.write("search_types = {\n")
+        f.write("\nsearch_types = {\n")
         for resource in sorted(data):
-            f.write("    '{}': {},\n".format(resource, resource.lower() + "_mapping"))
+            f.write(f"    '{resource}': {resource.lower()}_mapping,\n")
         f.write("    }\n\n")
         f.write("search_references = {\n")
         for resource in sorted(data):
             f.write(
-                "    '{}': {},\n".format(resource, resource.lower() + "_references")
-            )
+                f"    '{resource}': {resource.lower()}_references,\n"
+                )
         f.write("    }")
     print("Generated init file.")
 
