@@ -57,10 +57,8 @@ class Search:
         """
         Instantiates class with target endpoint and query string
 
-        :param resource: target FHIR resource
-        :type resource: str
-        :param query_string: query string
-        :type query_string: str
+        :param str resource: target FHIR resource
+        :param str query_string: query string
         :param mapping: mapping than overrides default (optional)
         :type mapping: dict(str, str)
         """
@@ -90,7 +88,7 @@ class Search:
 
         :param key: key
         :type key: str or int
-        :rtype: list(FHIRSearchPair) or list(FHIRSearchPair)
+        :rtype: list(FHIRSearchPair) or FHIRSearchPair
 
         """
 
@@ -211,7 +209,7 @@ class Search:
                         )
                     )
 
-            # Parse according to type
+            # Parse value string and cast it according to type
             if type_ == "quantity":
                 value_dict = self.parse_quantity(value)
             elif type_ == "token":
@@ -226,15 +224,12 @@ class Search:
                 value_dict = self.parse_number(value)
             elif type_ == "reference":
                 value_dict = self.parse_reference(value)
-            else:  # Special, Composite
-                pre, v = self.getPrefix(value, type_)
-                cast_value = self.cast_value(type_, v)
-                value_dict = {
-                    "system": None,
-                    "code": None,
-                    "value": cast_value,
-                    "prefix": pre,
-                }
+            elif type_ == "composite":
+                value_dict = self.parse_composite(value)
+            elif type_ == "special":
+                value_dict = self.parse_special(value)
+            else:
+                raise TypeError("Unknown type {}".format(type_))
 
             pairs.append(
                 FHIRSearchPair(
@@ -327,7 +322,7 @@ class Search:
             return True
         return False
 
-    def get_composite(self, value):
+    def get_composite_sequence(self, value):
         """
         Split on '$' to obtain composite search parameters.
 
@@ -338,7 +333,6 @@ class Search:
         :rtype:
             list
 
-        ::note: Composite parameters do not have modifiers
         """
         return value.split("$")
 
@@ -371,6 +365,66 @@ class Search:
                 return {"code": units[0], "system": ""}
             else:
                 return {"system": units[0], "code": units[1]}
+
+    def parse_special(self, full_string):
+        """Parse a special-type value string.
+
+        Treated as a simple string.
+
+        :param str full_string: Unadulterated value string
+        :return:
+            Parsed value string into dictionary
+        :return:
+            dict
+
+        ::note: Composite parameters do not have modifiers
+        """
+
+        # Parse value and prefix
+        prefix, value = self.getPrefix(full_string, "special")
+
+        # Cast value
+        cast_value = self.cast_value("special", value)
+
+        return {
+            "value": cast_value,
+            "prefix": prefix,
+            "system": None,
+            "code": None,
+        }
+
+    def parse_composite(self, full_string):
+        # TODO Do not know how to parse this as not entirely on standard
+        #       parameter$value ?? and parameter$value,value --- very confused
+        """Parse a composite-type value string.
+
+        The standard is generally hard to interpret but seems to be:
+
+            [parameter] = [other_defined_parameter]$[value]$[value], etc
+
+        Given difficulty understanding standard, parse as simple string
+
+        :param str full_string: Unadulterated value string
+        :return:
+            Parsed value string into dictionary
+        :return:
+            dict
+
+        ::note: Composite parameters do not have modifiers
+        """
+
+        # Parse value and prefix
+        prefix, value = self.getPrefix(full_string, "composite")
+
+        # Cast value
+        cast_value = self.cast_value("composite", value)
+
+        return {
+            "value": cast_value,
+            "prefix": prefix,
+            "system": None,
+            "code": None,
+        }
 
     def parse_quantity(self, full_string):
         """Parse a quantity-type value string.
