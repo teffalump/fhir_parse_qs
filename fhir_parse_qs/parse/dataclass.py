@@ -601,12 +601,14 @@ class Search:
         :param chains: chains to use
         :type chains: list(str)
         :return: non-empty, valid paths or exception (if no paths)
-        :rtype: list(list(FHIRChain)) or TypeError
+        :rtype: list(FHIRChain) or TypeError
         """
 
         temp = [x for x in self.getChainTree(saved, resource, chains) if x]
-        if not temp:
+        if len(temp) == 0:
             raise TypeError("No valid chains")
+        elif len(temp) > 1:
+            raise TypeError("Ambiguous chain: multiple valid chain trees; please narrow your chain")
         return temp
 
     def allowsChain(self, type_):

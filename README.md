@@ -11,8 +11,7 @@ A library to parse FHIR query strings.
 
 Releases 0.7.x and below used FHIR R3. Releases 0.8.x and greater use FHIR R4.
 
-The `update_mappings.py` script generates the mappings from the [HL7
-releases](https://www.hl7.org/fhir/).
+The `update_mappings.py` script generates the mappings from the [HL7 FHIR releases](https://www.hl7.org/fhir/).
 
 #### Usage
 
