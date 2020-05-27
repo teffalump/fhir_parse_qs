@@ -151,7 +151,7 @@ class Search:
 
             # Chain parsing with modifier as resource
             # e.g., :Patient.name
-            if mod and self.getChain(mod)[1]:
+            if mod and mod[0].isupper():
                 target_ep, chains = self.getChain(mod)
                 mod = None  # not a true modifier
             else:
@@ -181,7 +181,7 @@ class Search:
                     if target_ep in self.all_references[self.resource][par]:
                         chain_tree = [
                             x
-                            for x in self.getValidChains(self.resource, [par] + chains)
+                            for x in self.get_non_empty_chains(self.resource, [par] + chains)
                             if x[1].endpoint == target_ep
                         ]
                     else:
@@ -192,12 +192,23 @@ class Search:
                         )
                         continue
                 else:
-                    chain_tree = self.getValidChains(self.resource, [par] + chains)
+                    chain_tree = self.get_non_empty_chains(self.resource, [par] + chains)
             else:
                 chain_tree = None
 
-            # Chain overrules the original type and parameter
-            if chain_tree:
+
+            # Evaluate chain parsing
+            if chain_tree is not None: # Should there be a chain_tree
+
+                # Return errors if no chains or too many
+                if len(chain_tree) == 0:
+                    raise TypeError("No valid chains")
+
+                if len(chain_tree) > 1:
+                    raise TypeError(
+                        "Ambiguous chain: multiple valid chain trees; please narrow your chain"
+                    )
+
                 type_ = chain_tree[0][-1].ttype
                 par = chain_tree[0][-1].target
 
@@ -592,9 +603,9 @@ class Search:
             return base, mod[0]  # Should only be 1 (?)
         return base, None
 
-    def getValidChains(self, resource, chains, saved=[]):
+    def get_non_empty_chains(self, resource, chains, saved=[]):
         """
-        Wrapper for getChainTree, returning non-empty paths
+        Return non-empty chains
 
         :param resource: endpoint
         :type resource: str
@@ -604,14 +615,7 @@ class Search:
         :rtype: list(FHIRChain) or TypeError
         """
 
-        temp = [x for x in self.getChainTree(saved, resource, chains) if x]
-        if len(temp) == 0:
-            raise TypeError("No valid chains")
-        elif len(temp) > 1:
-            raise TypeError(
-                "Ambiguous chain: multiple valid chain trees; please narrow your chain"
-            )
-        return temp
+        return [x for x in self.getChainTree(saved, resource, chains) if x]
 
     def allowsChain(self, type_):
         """
