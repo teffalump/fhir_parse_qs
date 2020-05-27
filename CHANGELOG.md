@@ -1,4 +1,4 @@
-# Beren Changelog
+# Changelog
 
 Notable changes to the project are (hopefully) documented in this file.
 
