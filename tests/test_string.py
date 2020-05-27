@@ -132,10 +132,10 @@ class TestString:
         s = Search("Observation", "subject:Patient.name=peter")
         assert not s["name"].modifier
         assert s["name"].type_ == "string"
-        assert s["name"].chain[0][0].target == "subject"
-        assert s["name"].chain[0][1].endpoint == "Patient"
-        assert s["name"].chain[0][0].endpoint == "Observation"
-        assert len(s["name"].chain) == 1
+        assert s["name"].chain[0].target == "subject"
+        assert s["name"].chain[1].endpoint == "Patient"
+        assert s["name"].chain[0].endpoint == "Observation"
+        assert len(s["name"].chain) == 2
         assert s["name"].value == "peter"
         try:
             s = Search("Observation", "subject.organization=peter")  # None

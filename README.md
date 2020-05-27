@@ -49,17 +49,17 @@ The `update_mappings.py` script generates the mappings from the [HL7 FHIR releas
     search = Search('Patient', 'random=test')
     search.error ==> [...]
 
-    # supports chains (list of lists)
+    # supports chaining
     search = Search('Observation', 'patient.name=peter')
     search[0].parameter ==> 'name' # last parameter in chain
     search[0].value ==> 'peter'
-    search[0].chain ==> [[FHIRChain(...), FHIRChain(...)], ...]
-    search[0].chain[0][0].endpoint ==> 'Observation'
-    search[0].chain[0][0].target ==> 'patient'
-    search[0].chain[0][0].ttype ==> 'reference'
-    search[0].chain[0][1].endpoint ==> 'Patient'
-    search[0].chain[0][1].target ==> 'name'
-    search[0].chain[0][1].ttype ==> 'string'
+    search[0].chain ==> [FHIRChain(...), FHIRChain(...)]
+    search[0].chain[0].endpoint ==> 'Observation'
+    search[0].chain[0].target ==> 'patient'
+    search[0].chain[0].ttype ==> 'reference'
+    search[0].chain[1].endpoint ==> 'Patient'
+    search[0].chain[1].target ==> 'name'
+    search[0].chain[1].ttype ==> 'string'
 
     # supports systems and codes
     search = Search("Observation", "value-quantity=gt234|http://loinc.org|mg")

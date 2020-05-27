@@ -201,7 +201,7 @@ class Search:
                 chain_tree = None
 
             # Evaluate chain parsing
-            if chain_tree is not None:  # Should there be a chain_tree
+            if chain_tree is not None:  # Should be a chain_tree
 
                 # Return errors if no chains or too many
                 if len(chain_tree) == 0:
@@ -212,8 +212,9 @@ class Search:
                         "Ambiguous chain: multiple valid chain trees; please narrow your chain"
                     )
 
-                type_ = chain_tree[0][-1].ttype
-                par = chain_tree[0][-1].target
+                chain_tree = chain_tree.pop() # Flatten the list
+                type_ = chain_tree[-1].ttype
+                par = chain_tree[-1].target
 
             if mod:
                 if not self.validModifier(mod, type_):
