@@ -103,16 +103,14 @@ def write_init(data):
         for resource in sorted(data):
             f.write(
                 f"from .{resource.lower()} import {resource.lower()}_mapping, {resource.lower()}_references\n"
-                )
+            )
         f.write("\nsearch_types = {\n")
         for resource in sorted(data):
             f.write(f"    '{resource}': {resource.lower()}_mapping,\n")
         f.write("    }\n\n")
         f.write("search_references = {\n")
         for resource in sorted(data):
-            f.write(
-                f"    '{resource}': {resource.lower()}_references,\n"
-                )
+            f.write(f"    '{resource}': {resource.lower()}_references,\n")
         f.write("    }")
     print("Generated init file.")
 

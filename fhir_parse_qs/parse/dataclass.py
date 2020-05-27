@@ -608,7 +608,9 @@ class Search:
         if len(temp) == 0:
             raise TypeError("No valid chains")
         elif len(temp) > 1:
-            raise TypeError("Ambiguous chain: multiple valid chain trees; please narrow your chain")
+            raise TypeError(
+                "Ambiguous chain: multiple valid chain trees; please narrow your chain"
+            )
         return temp
 
     def allowsChain(self, type_):
