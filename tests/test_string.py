@@ -68,6 +68,17 @@ class TestString:
         assert s[0].parameter == "given"
         assert not s.prefix
 
+    def test_cast(self):
+        try:
+            s = Search("Observation", "value-quantity=AAA")
+        except ValueError:
+            pass
+
+        try:
+            s = Search("Procedure", "date=ge201000-01-01&date=le2011-12-31")
+        except ValueError:
+            pass
+
     def test_prefix_cast(self):
         s = Search("Procedure", "date=ge2010-01-01&date=le2011-12-31")
         assert s.endpoint == "Procedure"
