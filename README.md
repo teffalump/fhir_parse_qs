@@ -15,13 +15,37 @@ The `update_mappings.py` script generates the mappings from the [HL7 FHIR releas
 
 #### Usage
 
+Provide the endpoint and query_string arguments:
+
     from fhir_parse_qs import Search
+    search = Search('Patient', 'name=bob') # Search(<endpoint>, <query_string>)
+
+Each parameter/value pair is parsed into a FHIRSearchPair with attached FHIRParameter and FHIRValue namedtuples.
+
+    FHIRSearchPair.parameter ==> FHIRParameter
+    FHIRSearchPair.value ==> [FHIRValue..]
+
+        FHIRParameter:
+            value
+            modifier
+            chain ==> [FHIRChain...]
+            type_
+
+            FHIRChain:
+                endpoint
+                target
+                ttype
+
+        FHIRValue:
+            value
+            prefix
+            system
+            code
+
+Further features:
 
     # supported endpoints
     Search.supported ==> [...]
-
-    # simple use
-    search = Search('Patient', 'name=bob') # Search(<endpoint>, <query_string>)
 
     # endpoint
     search.endpoint ==> 'Patient'
@@ -30,13 +54,17 @@ The `update_mappings.py` script generates the mappings from the [HL7 FHIR releas
     search.parsed ==> [FHIRSearchPair(...)]
 
     # index as key; each parameter/value pair s parsed into a namedtuple
-    search[0] ==> FHIRSearchPair(...)
-    search[0].modifier ==> None
-    search[0].prefix ==> None
-    search[0].value ==> 'bob'
-    search[0].parameter ==> 'name'
-    search[0].type_ ==> 'string'
-    search[0].chain ==> None
+    search[0] ==> FHIRSearchPair:
+        parameter ==> FHIRParameter:
+            value ==> 'name'
+            modifier ==> None
+            chain ==> None
+            type_ ==> 'string'
+        value ==> FHIRValue(
+            prefix ==> None
+            value ==> 'bob'
+            system ==> None
+            code ==> None
 
     # act like dict with parameter as key
     search['name'] ==> FHIRSearchPair(...) #list if non-unique parameter
@@ -45,28 +73,32 @@ The `update_mappings.py` script generates the mappings from the [HL7 FHIR releas
     for x in search:
          print(x) ==> FHIRSearchPair(...)
 
+    # supports comma-separated list of values
+    search = Search('Patient', 'name=peter,travis')
+    search["name"] ==> [FHIRValue(...), FHIRValue(...)]
+
     # ignores and logs unrecognized parameters
     search = Search('Patient', 'random=test')
     search.error ==> [...]
 
     # supports chaining
     search = Search('Observation', 'patient.name=peter')
-    search[0].parameter ==> 'name' # last parameter in chain
-    search[0].value ==> 'peter'
-    search[0].chain ==> [FHIRChain(...), FHIRChain(...)]
-    search[0].chain[0].endpoint ==> 'Observation'
-    search[0].chain[0].target ==> 'patient'
-    search[0].chain[0].ttype ==> 'reference'
-    search[0].chain[1].endpoint ==> 'Patient'
-    search[0].chain[1].target ==> 'name'
-    search[0].chain[1].ttype ==> 'string'
+    search[0].parameter.value ==> 'name' # last parameter in chain
+    search[0].value[0].value ==> 'peter'
+    search[0].parameter.chain ==> [FHIRChain(...), FHIRChain(...)]
+    search[0].parameter.chain[0].endpoint ==> 'Observation'
+    search[0].parameter.chain[0].target ==> 'patient'
+    search[0].parameter.chain[0].ttype ==> 'reference'
+    search[0].parameter.chain[1].endpoint ==> 'Patient'
+    search[0].parameter.chain[1].target ==> 'name'
+    search[0].parameter.chain[1].ttype ==> 'string'
 
     # supports systems and codes
     search = Search("Observation", "value-quantity=gt234|http://loinc.org|mg")
-    search["value-quantity"].value ==> 234
-    search["value-quantity"].prefix ==> "gt"
-    search["value-quantity"].system ==> "http://loinc.org"
-    search["value-quantity"].code ==> "mg"
+    search["value-quantity"].value[0].value ==> 234
+    search["value-quantity"].value[0].prefix ==> "gt"
+    search["value-quantity"].value[0].system ==> "http://loinc.org"
+    search["value-quantity"].value[0].code ==> "mg"
 
     # return control parameters (eg, _sort, _count, etc)
     search.control ==> [...]

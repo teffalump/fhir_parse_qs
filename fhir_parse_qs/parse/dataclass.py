@@ -6,8 +6,10 @@ from fhir_parse_qs.mappings import search_references, search_types
 __all__ = ["Search"]
 
 FHIRSearchPair = namedtuple(
-    "FHIRSearchPair", "modifier prefix parameter value type_ chain system code"
+    "FHIRSearchPair", "parameter value"
 )
+FHIRParameter = namedtuple("FHIRParameter", "value chain modifier type_")
+FHIRValue = namedtuple("FHIRValue", "value prefix system code")
 FHIRChain = namedtuple("FHIRChain", "endpoint target ttype")
 
 
@@ -97,7 +99,7 @@ class Search:
         found = []
         if isinstance(key, str):
             for item in self.parsed_qs:
-                if item.parameter == key:
+                if item.parameter.value == key:
                     found.append(item)
         else:
             try:
@@ -125,9 +127,20 @@ class Search:
 
     @staticmethod
     def naive_parse_qs(qs):
-        """Wrapper for urllib.parse.parse_qsl"""
+        """Wrapper for 'urllib.parse.parse_qsl`
+        """
 
         return parse_qsl(qs)
+
+    @staticmethod
+    def get_values_from_value_string(value_string):
+        """Split value string but allow backscapes
+
+        That is, split on commas but allow escaping commas.
+
+        """
+        split_strings = value_string.replace("\,", ":::").split(",")
+        return [x.replace(":::", "\,") for x in split_strings]
 
     def parse_qs(self, qs):
         """Parse the query string
@@ -224,38 +237,45 @@ class Search:
                         )
                     )
 
-            # Parse value string and cast it according to type
-            if type_ == "quantity":
-                value_dict = self.parse_quantity(value)
-            elif type_ == "token":
-                value_dict = self.parse_token(value)
-            elif type_ == "uri":
-                value_dict = self.parse_uri(value)
-            elif type_ == "string":
-                value_dict = self.parse_string(value)
-            elif type_ == "date":
-                value_dict = self.parse_date(value)
-            elif type_ == "number":
-                value_dict = self.parse_number(value)
-            elif type_ == "reference":
-                value_dict = self.parse_reference(value)
-            elif type_ == "composite":
-                value_dict = self.parse_composite(value)
-            elif type_ == "special":
-                value_dict = self.parse_special(value)
-            else:
-                raise TypeError("Unknown type {}".format(type_))
+            # Parse value(s) and cast them according to type
+            values = []
+            for x in self.get_values_from_value_string(value):
+                if type_ == "quantity":
+                    value_dict = self.parse_quantity(x)
+                elif type_ == "token":
+                    value_dict = self.parse_token(x)
+                elif type_ == "uri":
+                    value_dict = self.parse_uri(x)
+                elif type_ == "string":
+                    value_dict = self.parse_string(x)
+                elif type_ == "date":
+                    value_dict = self.parse_date(x)
+                elif type_ == "number":
+                    value_dict = self.parse_number(x)
+                elif type_ == "reference":
+                    value_dict = self.parse_reference(x)
+                elif type_ == "composite":
+                    value_dict = self.parse_composite(x)
+                elif type_ == "special":
+                    value_dict = self.parse_special(x)
+                else:
+                    raise TypeError("Unknown type {}".format(type_))
+                values.append(
+                    FHIRValue(
+                        prefix=value_dict["prefix"],
+                        value=value_dict["value"],
+                        system=value_dict["system"],
+                        code=value_dict["code"]
+                        ))
 
             pairs.append(
                 FHIRSearchPair(
-                    modifier=mod,
-                    prefix=value_dict["prefix"],
-                    value=value_dict["value"],
-                    parameter=par,
-                    type_=type_,
-                    chain=chain_tree,
-                    system=value_dict["system"],
-                    code=value_dict["code"],
+                    parameter=FHIRParameter(
+                        value=par,
+                        modifier=mod,
+                        type_=type_,
+                        chain=chain_tree),
+                    value=values
                 )
             )
 
@@ -648,12 +668,9 @@ class Search:
         """
         Recursively generates paths given chains
 
-        :param saved: previously saved path
-        :type saved: list(FHIRChain)
-        :param resource: current endpoint
-        :type resource: str
-        :param chains: remaining chains
-        :type chains: list(str)
+        :param list saved: previously saved path (list of FHIRChains)
+        :param str resource: current endpoint
+        :param list chains: remaining chains (list of strings)
         :return: resource paths
         :rtype: list(list(FHIRChain))
         """
@@ -692,7 +709,7 @@ class Search:
         :rtype: list(str)
         """
 
-        return [x.modifier for x in self.parsed_qs if x.modifier is not None]
+        return [x.parameter.modifier for x in self.parsed_qs if x.parameter.modifier is not None]
 
     @property
     def prefix(self):
@@ -703,7 +720,7 @@ class Search:
         :rtype: list(str)
         """
 
-        return [x.prefix for x in self.parsed_qs if x.prefix is not None]
+        return [v.prefix for x in self.parsed_qs for v in x.value if v.prefix is not None]
 
     @property
     def value(self):
@@ -714,7 +731,7 @@ class Search:
         :rtype: list(str)
         """
 
-        return [x.value for x in self.parsed_qs]
+        return [item.value for x in self.parsed_qs for item in x.value]
 
     @property
     def parameter(self):
@@ -725,7 +742,7 @@ class Search:
         :rtype: list(str)
         """
 
-        return [x.parameter for x in self.parsed_qs]
+        return [x.parameter.value for x in self.parsed_qs]
 
     @property
     def endpoint(self):
@@ -769,7 +786,7 @@ class Search:
         :rtype: list(str)
         """
 
-        return [x for x in self.parsed_qs if x.parameter in self.all_types["control"]]
+        return [x.parameter.value for x in self.parsed_qs if x.parameter.value in self.all_types["control"]]
 
     @property
     def error(self):
