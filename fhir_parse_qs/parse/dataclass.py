@@ -5,9 +5,7 @@ from fhir_parse_qs.mappings import search_references, search_types
 
 __all__ = ["Search"]
 
-FHIRSearchPair = namedtuple(
-    "FHIRSearchPair", "parameter value"
-)
+FHIRSearchPair = namedtuple("FHIRSearchPair", "parameter value")
 FHIRParameter = namedtuple("FHIRParameter", "value chain modifier type_")
 FHIRValue = namedtuple("FHIRValue", "value prefix system code")
 FHIRChain = namedtuple("FHIRChain", "endpoint target ttype")
@@ -139,8 +137,8 @@ class Search:
         That is, split on commas but allow escaping commas.
 
         """
-        split_strings = value_string.replace("\,", ":::").split(",")
-        return [x.replace(":::", "\,") for x in split_strings]
+        split_strings = value_string.replace("\\,", ":::").split(",")
+        return [x.replace(":::", "\\,") for x in split_strings]
 
     def parse_qs(self, qs):
         """Parse the query string
@@ -225,7 +223,7 @@ class Search:
                         "Ambiguous chain: multiple valid chain trees; please narrow your chain"
                     )
 
-                chain_tree = chain_tree.pop() # Flatten the list
+                chain_tree = chain_tree.pop()  # Flatten the list
                 type_ = chain_tree[-1].ttype
                 par = chain_tree[-1].target
 
@@ -265,17 +263,16 @@ class Search:
                         prefix=value_dict["prefix"],
                         value=value_dict["value"],
                         system=value_dict["system"],
-                        code=value_dict["code"]
-                        ))
+                        code=value_dict["code"],
+                    )
+                )
 
             pairs.append(
                 FHIRSearchPair(
                     parameter=FHIRParameter(
-                        value=par,
-                        modifier=mod,
-                        type_=type_,
-                        chain=chain_tree),
-                    value=values
+                        value=par, modifier=mod, type_=type_, chain=chain_tree
+                    ),
+                    value=values,
                 )
             )
 
@@ -709,7 +706,11 @@ class Search:
         :rtype: list(str)
         """
 
-        return [x.parameter.modifier for x in self.parsed_qs if x.parameter.modifier is not None]
+        return [
+            x.parameter.modifier
+            for x in self.parsed_qs
+            if x.parameter.modifier is not None
+        ]
 
     @property
     def prefix(self):
@@ -720,7 +721,9 @@ class Search:
         :rtype: list(str)
         """
 
-        return [v.prefix for x in self.parsed_qs for v in x.value if v.prefix is not None]
+        return [
+            v.prefix for x in self.parsed_qs for v in x.value if v.prefix is not None
+        ]
 
     @property
     def value(self):
@@ -786,7 +789,11 @@ class Search:
         :rtype: list(str)
         """
 
-        return [x.parameter.value for x in self.parsed_qs if x.parameter.value in self.all_types["control"]]
+        return [
+            x
+            for x in self.parsed_qs
+            if x.parameter.value in self.all_types["control"]
+        ]
 
     @property
     def error(self):
