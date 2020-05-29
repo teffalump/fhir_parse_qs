@@ -790,9 +790,7 @@ class Search:
         """
 
         return [
-            x
-            for x in self.parsed_qs
-            if x.parameter.value in self.all_types["control"]
+            x for x in self.parsed_qs if x.parameter.value in self.all_types["control"]
         ]
 
     @property
