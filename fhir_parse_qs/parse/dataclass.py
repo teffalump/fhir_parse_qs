@@ -158,15 +158,15 @@ class Search:
             # 4) Cast the value according to parameter type
 
             # Get modifier
-            par, mod = self.getModifier(param)
+            par, mod = self.get_modifier(param)
 
             # Chain parsing with modifier as resource
             # e.g., :Patient.name
             if mod and mod[0].isupper():
-                target_ep, chains = self.getChain(mod)
+                target_ep, chains = self.get_chain(mod)
                 mod = None  # not a true modifier
             else:
-                par, chains = self.getChain(par)
+                par, chains = self.get_chain(par)
                 target_ep = None
 
             # If parameter not supported, ignore and add to errors
@@ -179,7 +179,7 @@ class Search:
                 continue
 
             # Does type allow chaining
-            if chains and not self.allowsChain(type_):
+            if chains and not self.allows_chain(type_):
                 self.errors.append(
                     "<parameter> '{}' does not allow chaining; Ignoring".format(par)
                 )
@@ -228,7 +228,7 @@ class Search:
                 par = chain_tree[-1].target
 
             if mod:
-                if not self.validModifier(mod, type_):
+                if not self.valid_modifier(mod, type_):
                     raise TypeError(
                         "<parameter> '{}' of <type> '{}' cannot have modifier '{}'".format(
                             par, type_, mod
@@ -287,14 +287,14 @@ class Search:
         :rtype: variable
         :raises ValueError: If error while casting
         """
-        value = self.getValidType(parameter_type, parameter_value)
+        value = self.get_valid_type(parameter_type, parameter_value)
         if value is False:
             raise ValueError(
                 "Cannot cast '{}' to type '{}'".format(parameter_value, parameter_type)
             )
         return value
 
-    def getValidType(self, type_, value):
+    def get_valid_type(self, type_, value):
         """
         Returns parsed value in correct type or False
 
@@ -309,7 +309,7 @@ class Search:
         except:
             return False
 
-    def getPrefix(self, value, type_):
+    def get_prefix(self, value, type_):
         """
         Returns valid prefixes
 
@@ -329,7 +329,7 @@ class Search:
                     return value[: len(pf)], value[len(pf) :]
         return None, value
 
-    def validModifier(self, modifier, type_):
+    def valid_modifier(self, modifier, type_):
         """
         Validate modifier
 
@@ -413,7 +413,7 @@ class Search:
         """
 
         # Parse value and prefix
-        prefix, value = self.getPrefix(full_string, "special")
+        prefix, value = self.get_prefix(full_string, "special")
 
         # Cast value
         cast_value = self.cast_value("special", value)
@@ -446,7 +446,7 @@ class Search:
         """
 
         # Parse value and prefix
-        prefix, value = self.getPrefix(full_string, "composite")
+        prefix, value = self.get_prefix(full_string, "composite")
 
         # Cast value
         cast_value = self.cast_value("composite", value)
@@ -472,7 +472,7 @@ class Search:
         expr_dict = self.get_system_and_code(full_string, quantity=True)
 
         # Parse value and prefix
-        prefix, value = self.getPrefix(expr_dict["number"], "quantity")
+        prefix, value = self.get_prefix(expr_dict["number"], "quantity")
 
         # Cast value
         cast_value = self.cast_value("quantity", value)
@@ -498,7 +498,7 @@ class Search:
         expr_dict = self.get_system_and_code(full_string, quantity=False)
 
         # Parse value and prefix
-        prefix, value = self.getPrefix(expr_dict["code"], "token")
+        prefix, value = self.get_prefix(expr_dict["code"], "token")
 
         # Cast value
         cast_value = self.cast_value("token", value)
@@ -527,7 +527,7 @@ class Search:
         :return:
             dict
         """
-        prefix, value = self.getPrefix(full_string, "reference")
+        prefix, value = self.get_prefix(full_string, "reference")
 
         # Cast value
         cast_value = self.cast_value("reference", value)
@@ -546,7 +546,7 @@ class Search:
             dict
         """
 
-        prefix, value = self.getPrefix(full_string, "uri")
+        prefix, value = self.get_prefix(full_string, "uri")
 
         # Cast value
         cast_value = self.cast_value("uri", value)
@@ -565,7 +565,7 @@ class Search:
             dict
         """
 
-        prefix, value = self.getPrefix(full_string, "string")
+        prefix, value = self.get_prefix(full_string, "string")
 
         # Cast value
         cast_value = self.cast_value("string", value)
@@ -584,7 +584,7 @@ class Search:
             dict
         """
 
-        prefix, value = self.getPrefix(full_string, "number")
+        prefix, value = self.get_prefix(full_string, "number")
 
         # Cast value
         cast_value = self.cast_value("number", value)
@@ -603,14 +603,14 @@ class Search:
             dict
         """
 
-        prefix, value = self.getPrefix(full_string, "date")
+        prefix, value = self.get_prefix(full_string, "date")
 
         # Cast value
         cast_value = self.cast_value("date", value)
 
         return {"value": cast_value, "prefix": prefix, "system": None, "code": None}
 
-    def getModifier(self, parameter):
+    def get_modifier(self, parameter):
         """
         Split on ':' to get any modifiers
 
@@ -636,9 +636,9 @@ class Search:
         :rtype: list(FHIRChain) or TypeError
         """
 
-        return [x for x in self.getChainTree(saved, resource, chains) if x]
+        return [x for x in self.get_chain_tree(saved, resource, chains) if x]
 
-    def allowsChain(self, type_):
+    def allows_chain(self, type_):
         """
         Can only chain references
 
@@ -649,7 +649,7 @@ class Search:
         """
         return True if type_ == "reference" else False
 
-    def getChain(self, parameter):
+    def get_chain(self, parameter):
         """
         Parse chains by splitting on '.'
 
@@ -661,7 +661,7 @@ class Search:
         base, *chain = parameter.split(".")
         return base, chain or None
 
-    def getChainTree(self, saved=[], resource=None, chains=[]):
+    def get_chain_tree(self, saved=[], resource=None, chains=[]):
         """
         Recursively generates paths given chains
 
@@ -688,7 +688,7 @@ class Search:
             except:
                 return []  # invalid if not valid reference
             return [
-                self.getChainTree(
+                self.get_chain_tree(
                     saved
                     + [FHIRChain(endpoint=resource, target=curr, ttype="reference")],
                     r,
