@@ -23,6 +23,8 @@ class Search:
 
     .. note:: This class uses namedtuples
         - FHIRSearchPair: modifier, prefix, parameter, value, type_, chain, system, code
+        - FHIRParameter = value, chain, modifier, type_
+        - FHIRValue = value, prefix, system, code
         - FHIRChain: endpoint, target, ttype
     """
 
@@ -278,7 +280,8 @@ class Search:
 
         return pairs
 
-    def cast_value(self, parameter_type, parameter_value):
+    @classmethod
+    def cast_value(cls, parameter_type, parameter_value):
         """Cast value according to parameter type
 
         :param str parameter_type: parameter type
@@ -287,14 +290,15 @@ class Search:
         :rtype: variable
         :raises ValueError: If error while casting
         """
-        value = self.get_valid_type(parameter_type, parameter_value)
+        value = cls.get_valid_type(parameter_type, parameter_value)
         if value is False:
             raise ValueError(
                 "Cannot cast '{}' to type '{}'".format(parameter_value, parameter_type)
             )
         return value
 
-    def get_valid_type(self, type_, value):
+    @classmethod
+    def get_valid_type(cls, type_, value):
         """
         Returns parsed value in correct type or False
 
@@ -305,11 +309,12 @@ class Search:
 
         """
         try:
-            return self.search_cast[type_](value)
+            return cls.search_cast[type_](value)
         except:
             return False
 
-    def get_prefix(self, value, type_):
+    @classmethod
+    def get_prefix(cls, value, type_):
         """
         Returns valid prefixes
 
@@ -324,7 +329,7 @@ class Search:
         """
 
         if type_ in ("number", "date", "quantity"):
-            for pf in self.allowed_prefixes:
+            for pf in cls.allowed_prefixes:
                 if value.startswith(pf):
                     return value[: len(pf)], value[len(pf) :]
         return None, value
@@ -333,26 +338,23 @@ class Search:
         """
         Validate modifier
 
-        :param modifier: modifier to check
-        :type modifier: str
-        :param type_: parameter type
-        :type type_: str
-        :return: True or False
+        :param str modifier: modifier to check
+        :param str type_: parameter type
+        :return: If valid modifier given type
         :rtype: True or False
-
-        .. TODO:: Add reference 'type' modifier logic
         """
-        if type_ == "reference":
-            return True  # e.g., :Patient.name, :Observation.id
         if modifier in ("missing", "exists"):
             return True
-        if modifier in ("exact", "contains") and type_ == "string":
+        elif type_ == "string" and modifier in ("exact", "contains"):
             return True
-        if modifier in ("text", "in", "below", "above", "not-in") and type_ == "token":
+        elif type_ == "token" and modifier in ("text", "in", "below", "above", "not-in"):
             return True
-        if modifier in ("below", "above") and type_ == "uri":
+        elif type_ == "uri" and modifier in ("below", "above"):
             return True
-        return False
+        elif type_ == "reference" and modifier in supported: # e.g., :Patient.name, :Observation.id
+            return True
+        else:
+            return False
 
     def get_composite_sequence(self, value):
         """
@@ -663,7 +665,7 @@ class Search:
 
     def get_chain_tree(self, saved=[], resource=None, chains=[]):
         """
-        Recursively generates paths given chains
+        Recursively generates chain paths
 
         :param list saved: previously saved path (list of FHIRChains)
         :param str resource: current endpoint
