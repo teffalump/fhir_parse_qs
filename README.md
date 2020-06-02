@@ -20,15 +20,25 @@ Provide the endpoint and query_string arguments:
     from fhir_parse_qs import Search
     search = Search('Patient', 'name=bob') # Search(<endpoint>, <query_string>)
 
+    # supported endpoints
+    Search.supported ==> [...]
+
+    # endpoint
+    search.endpoint ==> 'Patient'
+
 Each parameter/value pair is parsed into a FHIRSearchPair with attached FHIRParameter and FHIRValue namedtuples.
 
+    # all the namedtuples
+    search.parsed ==> [FHIRSearchPair(...)]
+
     FHIRSearchPair.parameter ==> FHIRParameter
-    FHIRSearchPair.value ==> [FHIRValue..]
+    FHIRSearchPair.value ==> [FHIRValue, ...]
 
         FHIRParameter:
             value
             modifier
-            chain ==> [FHIRChain...]
+            chain
+                [FHIRChain...]
             type_
 
             FHIRChain:
@@ -44,27 +54,19 @@ Each parameter/value pair is parsed into a FHIRSearchPair with attached FHIRPara
 
 Further features:
 
-    # supported endpoints
-    Search.supported ==> [...]
-
-    # endpoint
-    search.endpoint ==> 'Patient'
-
-    # all the namedtuples
-    search.parsed ==> [FHIRSearchPair(...)]
-
-    # index as key; each parameter/value pair s parsed into a namedtuple
+    # index as key; each parameter/value pair parsed into a namedtuple
     search[0] ==> FHIRSearchPair:
         parameter ==> FHIRParameter:
             value ==> 'name'
             modifier ==> None
             chain ==> None
             type_ ==> 'string'
-        value ==> FHIRValue(
+        value ==> [FHIRValue(
             prefix ==> None
             value ==> 'bob'
             system ==> None
             code ==> None
+            ]
 
     # act like dict with parameter as key
     search['name'] ==> FHIRSearchPair(...) #list if non-unique parameter
@@ -105,7 +107,7 @@ Further features:
 
 #### TODO
 
-- Narrow allowed chains (return error for ambiguous chains)
+- Narrow allowed chains (return error for ambiguous chains) (unreleased)
 - The `_filter` parameter
 - Reverse chains
 - Composite searches
