@@ -347,11 +347,19 @@ class Search:
             return True
         elif type_ == "string" and modifier in ("exact", "contains"):
             return True
-        elif type_ == "token" and modifier in ("text", "in", "below", "above", "not-in"):
+        elif type_ == "token" and modifier in (
+            "text",
+            "in",
+            "below",
+            "above",
+            "not-in",
+        ):
             return True
         elif type_ == "uri" and modifier in ("below", "above"):
             return True
-        elif type_ == "reference" and modifier in supported: # e.g., :Patient.name, :Observation.id
+        elif (
+            type_ == "reference" and modifier in supported
+        ):  # e.g., :Patient.name, :Observation.id
             return True
         else:
             return False
