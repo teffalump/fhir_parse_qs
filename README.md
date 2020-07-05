@@ -1,6 +1,6 @@
 # fhir_parse_qs
 
-[![Build Status](https://travis-ci.com/teffalump/fhir_parse_qs.svg?branch=master)](https://travis-ci.com/teffalump/fhir_parse_qs)
+[![Build Status](https://travis-ci.com/teffalump/fhir_parse_qs.svg?branch=main)](https://travis-ci.com/teffalump/fhir_parse_qs)
 [![PyPI version](https://badge.fury.io/py/fhir-parse-qs.svg)](https://badge.fury.io/py/fhir-parse-qs)
 
 A library to parse FHIR query strings.
