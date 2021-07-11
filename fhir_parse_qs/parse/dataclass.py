@@ -127,8 +127,7 @@ class Search:
 
     @staticmethod
     def naive_parse_qs(qs):
-        """Wrapper for 'urllib.parse.parse_qsl`
-        """
+        """Wrapper for 'urllib.parse.parse_qsl`"""
 
         return parse_qsl(qs)
 
@@ -495,7 +494,7 @@ class Search:
         }
 
     def parse_token(self, full_string):
-        """ Parse a token-type value string.
+        """Parse a token-type value string.
 
         :param str full_string: Unadulterated value string
         :return:
@@ -521,7 +520,7 @@ class Search:
         }
 
     def parse_reference(self, full_string):
-        """ Parse a reference-type value string.
+        """Parse a reference-type value string.
 
         Per standard:
 
@@ -545,7 +544,7 @@ class Search:
         return {"value": cast_value, "prefix": prefix, "system": None, "code": None}
 
     def parse_uri(self, full_string):
-        """ Parse a uri-type value string.
+        """Parse a uri-type value string.
 
         Per standard, there is no special parsing.
 
@@ -564,7 +563,7 @@ class Search:
         return {"value": cast_value, "prefix": prefix, "system": None, "code": None}
 
     def parse_string(self, full_string):
-        """ Parse a string-type value string.
+        """Parse a string-type value string.
 
         Per standard, there is no special parsing.
 
@@ -583,7 +582,7 @@ class Search:
         return {"value": cast_value, "prefix": prefix, "system": None, "code": None}
 
     def parse_number(self, full_string):
-        """ Parse a number-type value string.
+        """Parse a number-type value string.
 
         Per standard, there is no special parsing.
 
@@ -602,7 +601,7 @@ class Search:
         return {"value": cast_value, "prefix": prefix, "system": None, "code": None}
 
     def parse_date(self, full_string):
-        """ Parse a date-type value string.
+        """Parse a date-type value string.
 
         Per standard, there is no special parsing.
 
